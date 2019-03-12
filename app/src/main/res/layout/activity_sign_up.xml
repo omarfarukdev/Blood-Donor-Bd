@@ -44,17 +44,35 @@
                 android:layout_marginLeft="15dp"
                 android:layout_marginRight="15dp"
                 />
-            <EditText
-                android:id="@+id/bloodGroupEt"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Blood Group (required)"
-                android:layout_marginTop="8dp"
-                android:layout_marginLeft="15dp"
-                android:layout_marginRight="15dp"
-                />
+                android:layout_height="wrap_content">
+                <Spinner
+                    android:id="@+id/bloodGroup"
+                    android:layout_width="80dp"
+                    android:layout_height="40dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp"
+                    android:prompt="@string/selectbloodgroup"
+                    android:entries="@array/bloodgroup"
+                    >
+
+                </Spinner>
+                <TextView
+                    android:id="@+id/bloodGroupEt"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:hint="Blood Group (required)"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp"
+                    />
+            </LinearLayout>
+
             <EditText
                 android:id="@+id/dateOfBirthEt"
+                android:onClick="Birthdate"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Date of Birth"
@@ -62,31 +80,34 @@
                 android:layout_marginLeft="15dp"
                 android:layout_marginRight="15dp"
                 />
-            <EditText
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Phone Number"
-                android:layout_marginTop="8dp"
-                android:layout_marginLeft="15dp"
-                android:layout_marginRight="15dp"
-                />
-            <EditText
-                android:id="@+id/phone"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Password"
-                android:layout_marginTop="8dp"
-                android:layout_marginLeft="15dp"
-                android:layout_marginRight="15dp"
-                />
-            <EditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Password (again)"
-                android:layout_marginTop="8dp"
-                android:layout_marginLeft="15dp"
-                android:layout_marginRight="15dp"
-                />
+                android:orientation="horizontal">
+                <Spinner
+                    android:id="@+id/gender"
+                    android:layout_width="80dp"
+                    android:layout_height="40dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp"
+                    android:prompt="@string/selectgender"
+                    android:entries="@array/gender">
+
+                </Spinner>
+                <TextView
+                    android:id="@+id/phone"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:hint="Gender"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp"
+                    />
+            </LinearLayout>
+
+
         </LinearLayout>
 
     </LinearLayout>
