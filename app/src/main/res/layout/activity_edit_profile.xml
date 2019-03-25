@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SignUpActivity"
+    tools:context=".EditProfileActivity"
     android:orientation="vertical"
     android:padding="10dp"
     android:weightSum="10">
@@ -19,21 +19,21 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="3"
-            android:gravity="bottom"
+            android:layout_weight="1"
+
             >
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Setup Profile"
+                android:text="Edit Profile"
                 android:textSize="30dp"
                 android:textStyle="bold"
                 android:textColor="#000"
-                android:layout_marginBottom="10dp"
+                android:layout_marginTop="15dp"
                 android:layout_marginLeft="15dp"/>
         </LinearLayout>
         <LinearLayout
-            android:layout_weight="7"
+            android:layout_weight="9"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
@@ -49,7 +49,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
                 <Spinner
-                    android:id="@+id/bloodgroup"
+                    android:id="@+id/bloodGroup"
                     android:layout_width="80dp"
                     android:layout_height="40dp"
                     android:layout_marginTop="8dp"
@@ -108,6 +108,19 @@
                     />
             </LinearLayout>
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Phone Number"/>
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="+880123456789"/>
+            </LinearLayout>
 
         </LinearLayout>
 
@@ -118,13 +131,14 @@
         android:layout_weight="3"
         android:gravity="bottom">
         <Button
-            android:onClick="setupprofile"
+            android:onClick="save"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Next"
+            android:text="Save"
             android:background="#F52020"
             android:padding="10dp"
             android:textColor="#F5F3F3"
             android:layout_marginBottom="10dp"/>
     </LinearLayout>
+
 </LinearLayout>

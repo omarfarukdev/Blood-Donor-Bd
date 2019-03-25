@@ -56,6 +56,8 @@
         android:layout_weight="3"
         android:gravity="bottom">
         <Button
+            android:id="@+id/discoverableBt"
+            android:onClick="discoverable"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="10dp"
