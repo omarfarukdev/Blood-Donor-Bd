@@ -25,4 +25,5 @@ public class UserInformation {
     public String getGender() {
         return gender;
     }
+
 }
