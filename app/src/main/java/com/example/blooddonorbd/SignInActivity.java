@@ -38,4 +38,5 @@ public class SignInActivity extends AppCompatActivity {
         Toast.makeText(this, "Service started", Toast.LENGTH_SHORT).show();
         startService(i);
     }
+
 }

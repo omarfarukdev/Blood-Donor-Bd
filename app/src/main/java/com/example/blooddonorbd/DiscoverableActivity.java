@@ -78,4 +78,5 @@ public class DiscoverableActivity extends AppCompatActivity {
         Intent intent = new Intent(DiscoverableActivity.this,SignInActivity.class);
         startActivity(intent);
     }
+
 }

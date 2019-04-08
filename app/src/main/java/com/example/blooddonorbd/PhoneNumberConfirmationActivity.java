@@ -159,4 +159,5 @@ public class PhoneNumberConfirmationActivity extends AppCompatActivity {
         String code = codeEt.getText().toString();
         verifyVerificationCode(code);
     }
+
 }

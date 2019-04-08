@@ -91,4 +91,5 @@ public class SetupProfileActivity extends AppCompatActivity {
             dateOfBirth.setError("Enter your date of birth.");
         }
     }
+
 }

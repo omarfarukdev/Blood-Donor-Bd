@@ -62,4 +62,5 @@ public class VerifyPhoneNumberActivity extends AppCompatActivity {
         });
         alertDialog.show();
     }
+
 }
