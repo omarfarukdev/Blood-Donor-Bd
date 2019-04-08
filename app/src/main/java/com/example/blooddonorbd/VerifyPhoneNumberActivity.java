@@ -33,7 +33,7 @@ public class VerifyPhoneNumberActivity extends AppCompatActivity {
 
     }
 
-    public void signUpTv(View view) {
+    public void nextBtOnverifyAc(View view) {
         //alert dialog for phone number confirmation
         final AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
         alertDialog.setMessage("Verification phone number is "+ccp.getFullNumberWithPlus()+". Do you want to edit the number ?");
