@@ -7,15 +7,12 @@
     android:orientation="vertical"
     android:layout_weight="5"
     tools:context=".HomeActivity">
-
-    <LinearLayout
+    <android.support.v7.widget.Toolbar
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:weightSum=".1"
         android:background="#DF1B1B"
-        android:orientation="vertical"
-        android:padding="10dp">
-
+        android:minHeight="?attr/actionBarSize"
+        android:id="@+id/toolbar">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -41,23 +38,31 @@
             <ImageView
                 android:layout_width="80dp"
                 android:layout_height="80dp"
-                android:layout_marginLeft="20dp"
+                android:layout_marginLeft="40dp"
+                android:layout_marginTop="2dp"
                 android:src="@drawable/user" />
         </LinearLayout>
+
+    </android.support.v7.widget.Toolbar>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:weightSum=".1"
+        android:background="#DF1B1B"
+        android:orientation="vertical"
+        android:padding="10dp">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
             android:text="Need Blood ?"
             android:textSize="30dp" />
 
         <TextView
             android:layout_width="200dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:text="Select your locatio
- and blood group."
+            android:text="Select your locatio and blood group."
             android:textSize="20dp" />
 
     </LinearLayout>
@@ -148,7 +153,6 @@
                 android:layout_gravity="bottom"
                 android:background="#DF1B1B"
                 android:gravity="center"
-                android:onClick="home"
                 android:padding="10dp"
                 android:text="Find"
                 android:textColor="#F5F3F3" />
