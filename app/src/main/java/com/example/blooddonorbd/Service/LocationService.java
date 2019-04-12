@@ -2,9 +2,11 @@ package com.example.blooddonorbd.Service;
 
 import android.Manifest;
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -12,6 +14,7 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.PowerManager;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -43,8 +46,10 @@ public class LocationService extends Service implements LocationListener, Google
     private long UPDATE_INTERVAL = 2 * 1000;  /* 10 secs */
     private long FASTEST_INTERVAL = 2000; /* 2 sec */
 
-    final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
+
+    //final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("User").child(FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber());
     @Override
     public IBinder onBind(Intent intent) {
         return null;
@@ -61,7 +66,12 @@ public class LocationService extends Service implements LocationListener, Google
 
         mLocationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 
-        checkLocation();
+        registerReceiver(broadcastReceiver, new IntentFilter(LocationManager.PROVIDERS_CHANGED_ACTION));
+       // checkLocation();
+
+        if (isLocationEnabled()) {
+            databaseReference.child("Location").setValue("On");
+        }
     }
 
     @Override
@@ -162,10 +172,17 @@ public class LocationService extends Service implements LocationListener, Google
             for(int i=0;i<sp.length;i++){
                 addressList.add(sp[i]);
             }
-            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("User").child(FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber());
             databaseReference.child("Country").setValue(addressList.get(addressList.size()-1));
             databaseReference.child("City").setValue(addressList.get(addressList.size()-2));
             databaseReference.child("State").setValue(addressList.get(addressList.size()-3));
+            databaseReference.child("Full address").setValue(fullAddress);
+
+            try{
+                databaseReference.child("Road").setValue(addressList.get(addressList.size()-4));
+            }catch (Exception e){
+                databaseReference.child("Road").setValue("Null");
+            }
+
 
             //Toast.makeText(this,"Tvr "+addressList.get(addressList.size()-1), Toast.LENGTH_SHORT).show();
            // mLongitudeTextView.setText("latitude = " + obj.getAddressLine(0));
@@ -173,20 +190,12 @@ public class LocationService extends Service implements LocationListener, Google
         } catch (IOException e) {
             e.printStackTrace();
         }
-        String msg = "Updated Location: " +
-                Double.toString(location.getLatitude()) + "," +
-                Double.toString(location.getLongitude());
     }
 
-    private boolean checkLocation() {
-        if (!isLocationEnabled())
-            showAlert();
-        return isLocationEnabled();
-    }
 
-    private void showAlert() {
+   /* private void showAlert() {
         final android.support.v7.app.AlertDialog.Builder dialog = new AlertDialog.Builder(this);
-        /*dialog.setTitle("Enable Location")
+        *//*dialog.setTitle("Enable Location")
                 .setMessage("Your Locations Settings is set to 'Off'.\nPlease Enable Location to " +
                         "use this app")
                 .setPositiveButton("Location Settings", new DialogInterface.OnClickListener().OnClickListener() {
@@ -202,7 +211,7 @@ public class LocationService extends Service implements LocationListener, Google
                     public void onClick(DialogInterface paramDialogInterface, int paramInt) {
 
                     }
-                });*/
+                });*//*
         dialog.setPositiveButton("Location settings", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -211,7 +220,18 @@ public class LocationService extends Service implements LocationListener, Google
             }
         });
         dialog.show();
-    }
+    }*/
+
+    BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (isLocationEnabled()) {
+                databaseReference.child("Location").setValue("On");
+            }else if(intent.getAction().matches("android.location.PROVIDERS_CHANGED") && !isLocationEnabled()){
+                databaseReference.child("Location").setValue("Off");
+            }
+        }
+    };
 
     private boolean isLocationEnabled() {
         mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
