@@ -47,12 +47,20 @@ public class SplashActivity extends AppCompatActivity {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                 int count = (int) dataSnapshot.getChildrenCount();
-                                if (count>1){
+                                if (count>1 && !isLocationEnabled()){
                                     Intent intent = new Intent(SplashActivity.this,DiscoverableActivity.class);
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                     finish();
                                     startActivity(intent);
-                                }else{
+                                }else if (count>1 && isLocationEnabled()){
+                                    Intent intent = new Intent(SplashActivity.this,HomeActivity.class);
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                    finish();
+                                    startActivity(intent);
+                                }
+                                else{
                                     Intent intent = new Intent(SplashActivity.this, SetupProfileActivity.class);
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                     finish();
                                     startActivity(intent);
                                 }
