@@ -167,10 +167,7 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
                                                     Toast.makeText(HomeActivity.this, ""+d.child("Full Name").getValue(), Toast.LENGTH_SHORT).show();
                                                     c++;
                                                 }
-                                                else if(d.child("Road").getValue().equals(road) && d.child("City").getValue().equals(city)){
-                                                    Toast.makeText(HomeActivity.this, ""+d.child("Full Name").getValue(), Toast.LENGTH_SHORT).show();
-                                                    c++;
-                                                }
+
                                             }catch (Exception e){}
 
                                         }

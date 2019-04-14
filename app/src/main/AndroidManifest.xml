@@ -19,6 +19,7 @@
         <activity android:name=".StartActivity" />
         <activity android:name=".PhoneNumberConfirmationActivity" />
         <activity android:name=".VerifyPhoneNumberActivity" />
+        <activity android:name=".HomeActivity" />
         <activity android:name=".SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
