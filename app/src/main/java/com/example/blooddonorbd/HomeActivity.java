@@ -198,7 +198,7 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
 
     @Override
     public void onLocationChanged(Location location) {
-
+      
     }
 
     public void findBt(View view) {
