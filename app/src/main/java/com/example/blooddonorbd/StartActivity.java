@@ -16,7 +16,9 @@ public class StartActivity extends AppCompatActivity {
     }
 
     public void getStartedBt(View view) {
-        Intent intent = new Intent(this,SignInActivity.class);
+        Intent intent = new Intent(this, VerifyPhoneNumberActivity.class);
+        finish();
         startActivity(intent);
     }
 }
+

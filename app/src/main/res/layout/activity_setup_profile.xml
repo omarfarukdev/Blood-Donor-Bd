@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SignUpActivity"
+    tools:context=".SetupProfileActivity"
     android:orientation="vertical"
     android:padding="10dp"
     android:weightSum="10">
@@ -26,7 +26,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Setup Profile"
-                android:textSize="30dp"
+                android:textSize="20dp"
                 android:textStyle="bold"
                 android:textColor="#000"
                 android:layout_marginBottom="10dp"
@@ -44,13 +44,14 @@
                 android:hint="Full Name"
                 android:layout_marginLeft="15dp"
                 android:layout_marginRight="15dp"
+
                 />
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
                 <Spinner
-                    android:id="@+id/bloodgroup"
-                    android:layout_width="80dp"
+                    android:id="@+id/bloodGroupSp"
+                    android:layout_width="wrap_content"
                     android:layout_height="40dp"
                     android:layout_marginTop="8dp"
                     android:layout_marginLeft="15dp"
@@ -87,8 +88,8 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
                 <Spinner
-                    android:id="@+id/gender"
-                    android:layout_width="100dp"
+                    android:id="@+id/genderSP"
+                    android:layout_width="wrap_content"
                     android:layout_height="40dp"
                     android:layout_marginTop="8dp"
                     android:layout_marginLeft="15dp"
@@ -97,15 +98,15 @@
                     android:entries="@array/gender">
 
                 </Spinner>
+
                 <TextView
                     android:id="@+id/phone"
                     android:layout_width="match_parent"
                     android:layout_height="40dp"
-                    android:hint="Gender"
-                    android:layout_marginTop="8dp"
                     android:layout_marginLeft="15dp"
+                    android:layout_marginTop="8dp"
                     android:layout_marginRight="15dp"
-                    />
+                    android:hint="Gender" />
             </LinearLayout>
 
 
@@ -118,7 +119,7 @@
         android:layout_weight="3"
         android:gravity="bottom">
         <Button
-            android:onClick="setupprofile"
+            android:onClick="setupprofileBt"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Next"

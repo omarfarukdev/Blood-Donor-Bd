@@ -2,6 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.blooddonorbd">
 
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET"/>
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -16,9 +20,13 @@
         <activity android:name=".EditProfileActivity" />
         <activity android:name=".ProfileActivity" />
         <activity android:name=".SignUpActivity" />
+        <activity android:name=".SetupProfileActivity"></activity>
         <activity android:name=".DiscoverableActivity" />
         <activity android:name=".SignInActivity" />
         <activity android:name=".StartActivity" />
+        <activity android:name=".PhoneNumberConfirmationActivity" />
+        <activity android:name=".VerifyPhoneNumberActivity" />
+        <activity android:name=".HomeActivity" />
         <activity android:name=".SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -26,6 +34,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        
+        <service android:name=".Service.LocationService"/>
     </application>
 
 </manifest>
