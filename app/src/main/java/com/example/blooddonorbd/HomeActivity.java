@@ -1,12 +1,16 @@
 package com.example.blooddonorbd;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+
+import com.example.blooddonorbd.Models.UserInformation;
+import com.google.android.gms.common.api.GoogleApiClient;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -19,12 +23,14 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.blooddonorbd.Service.LocationService;
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
@@ -45,15 +51,15 @@ import java.util.Locale;
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 
 public class HomeActivity extends AppCompatActivity implements LocationListener {
-    private GoogleApiClient mGoogleApiClient;
     private Location mLocation;
     private LocationManager mLocationManager;
     private LocationRequest mLocationRequest;
     private long UPDATE_INTERVAL = 2 * 1000;  /* 10 secs */
     private long FASTEST_INTERVAL = 2000; /* 2 sec */
     private FusedLocationProviderClient client;
+    Spinner bloodGroupSpinner;
     TextView currentLocationTv, donotNumberTv;
-    String fullAddress, city, country, state,road;
+    String fullAddress, city, country, state,road,bloodGroup,spinnerSelectedItem;
     private FusedLocationProviderClient fusedLocationClient;
 
     @Override
@@ -61,15 +67,34 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
+        getSupportActionBar().hide();
         currentLocationTv = findViewById(R.id.currentlocation);
         donotNumberTv = findViewById(R.id.donorNumberTv);
+        bloodGroupSpinner = findViewById(R.id.bloodgroupSpHome);
 
+        //service started here
         Intent i = new Intent(getApplicationContext(), LocationService.class);
         Toast.makeText(this, "Service started", Toast.LENGTH_SHORT).show();
         startService(i);
 
         //database reference
         //DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("User").child(FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber());
+        ArrayAdapter<String> adapter_option=new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item,getResources().getStringArray(R.array.bloodgroup));
+        adapter_option.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        bloodGroupSpinner.setAdapter(adapter_option);
+        //bloodGroupSpinner.setSelection(2);
+        spinnerSelectedItem = bloodGroupSpinner.getSelectedItem().toString();
+        bloodGroupSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                spinnerSelectedItem = (String) parent.getItemAtPosition(position);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
 
         donotNumberTv.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -136,7 +161,28 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
                                 databaseReferenceForBloodGroup.addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                        Toast.makeText(HomeActivity.this, ""+dataSnapshot.getValue(), Toast.LENGTH_SHORT).show();
+                                        //Toast.makeText(HomeActivity.this, ""+dataSnapshot.getValue(), Toast.LENGTH_SHORT).show();
+                                        try{
+                                            bloodGroup = dataSnapshot.getValue().toString();
+                                            if (bloodGroup.equals("A+")){
+                                                bloodGroupSpinner.setSelection(0);
+                                            }else if(bloodGroup.equals("A-")){
+                                                bloodGroupSpinner.setSelection(1);
+                                            } else if(bloodGroup.equals("B+")){
+                                                bloodGroupSpinner.setSelection(2);
+                                            }else if(bloodGroup.equals("B-")){
+                                                bloodGroupSpinner.setSelection(3);
+                                            }else if(bloodGroup.equals("O+")){
+                                                bloodGroupSpinner.setSelection(4);
+                                            }else if(bloodGroup.equals("O-")){
+                                                bloodGroupSpinner.setSelection(5);
+                                            }else if(bloodGroup.equals("AB+")){
+                                                bloodGroupSpinner.setSelection(6);
+                                            }else if(bloodGroup.equals("AB-")){
+                                                bloodGroupSpinner.setSelection(7);
+                                            }
+                                        }catch (Exception e){}
+
                                     }
 
                                     @Override
@@ -162,13 +208,30 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
                                         //Toast.makeText(HomeActivity.this, ""+dataSnapshot.child(FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber()).getKey(), Toast.LENGTH_SHORT).show();
                                         for (DataSnapshot d:dataSnapshot.getChildren()){
                                             try {
-                                                //Toast.makeText(HomeActivity.this, ""+d.child("User id").getValue(), Toast.LENGTH_SHORT).show();
-                                                if ((d.child("Location").getValue().equals("On")) && (d.child("Full address").getValue().equals(fullAddress))){
-                                                    Toast.makeText(HomeActivity.this, ""+d.child("Full Name").getValue(), Toast.LENGTH_SHORT).show();
-                                                    c++;
-                                                }
+                                                String statee = d.child("State").getValue().toString();
+                                                String city = d.child("City").getValue().toString();
 
-                                            }catch (Exception e){}
+                                                String[] stateList = statee.split(" ");
+                                                String[] cityList = city.split(" ");
+
+                                                String[] deviceState = state.split(" ");
+                                                String[] deviceCity = city.split(" ");
+
+                                                    if (!d.getKey().equals(FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber()) &&(d.child("Location").getValue().equals("On")) && (d.child("Full address").getValue().equals(fullAddress))){
+                                                        Toast.makeText(HomeActivity.this, ""+d.child("Full Name").getValue(), Toast.LENGTH_SHORT).show();
+
+                                                        c++;
+                                                    }else if(!d.getKey().equals(FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber())&& (d.child("Location").getValue().equals("On"))&&
+                                                            (checkString(stateList,deviceState) == true) && (checkString(cityList,deviceCity) == true)){
+
+                                                        c++;
+                                                    }
+                                                    //else if(!d.getKey().equals(FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber()))
+                                               // }
+
+                                            }catch (Exception e){
+                                                Toast.makeText(HomeActivity.this, ""+e, Toast.LENGTH_SHORT).show();
+                                            }
 
                                         }
                                         donotNumberTv.setText(String.valueOf(c));
@@ -182,7 +245,7 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
-                            Toast.makeText(HomeActivity.this, "" + location.getLongitude(), Toast.LENGTH_SHORT).show();
+                            //Toast.makeText(HomeActivity.this, "" + location.getLongitude(), Toast.LENGTH_SHORT).show();
                         } else {
                             Toast.makeText(HomeActivity.this, "Null", Toast.LENGTH_SHORT).show();
                         }
@@ -202,14 +265,33 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
     }
 
     public void findBt(View view) {
-        Intent intent = new Intent(HomeActivity.this,SignInActivity.class);
+        Intent intent = new Intent(HomeActivity.this,ResultActivity.class);
         intent.putExtra("fullAddress",fullAddress);
         intent.putExtra("country",country);
         intent.putExtra("city",city);
         intent.putExtra("state",state);
+        intent.putExtra("bloodGroup",spinnerSelectedItem);
+        Toast.makeText(this, ""+spinnerSelectedItem, Toast.LENGTH_SHORT).show();
         try{
             intent.putExtra("road",road);
         }catch (Exception e){}
         startActivity(intent);
+
+        //FirebaseAuth.getInstance().signOut();
+    }
+
+    public void search(View view) {
+
+    }
+
+    boolean checkString(String[] arr1,String[] arr2){
+        for (String s:arr1){
+            for (String s2:arr2){
+                if(s.equals(s2)){
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

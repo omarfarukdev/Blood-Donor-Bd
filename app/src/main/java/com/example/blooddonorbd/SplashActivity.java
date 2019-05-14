@@ -6,6 +6,7 @@ import android.location.LocationManager;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -27,7 +28,11 @@ public class SplashActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+    }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
         final FirebaseAuth auth;
         auth = FirebaseAuth.getInstance();
         final FirebaseUser firebaseUser = auth.getCurrentUser();
@@ -39,52 +44,69 @@ public class SplashActivity extends AppCompatActivity {
             public void run() {
                 try {
                     sleep(2000);//starting new activity after waiting 2000 ms
-
-                    if(firebaseUser!=null){
-                        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("User").child(auth.getCurrentUser().getPhoneNumber());//current user references
-                        //counting current user data
-                        databaseReference.addValueEventListener(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                int count = (int) dataSnapshot.getChildrenCount();
-                                if (count>1 && !isLocationEnabled()){
-                                    Intent intent = new Intent(SplashActivity.this,DiscoverableActivity.class);
-                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                    finish();
-                                    startActivity(intent);
-                                }else if (count>1 && isLocationEnabled()){
-                                    Intent intent = new Intent(SplashActivity.this,HomeActivity.class);
-                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                    finish();
-                                    startActivity(intent);
-                                }
-                                else{
-                                    Intent intent = new Intent(SplashActivity.this, SetupProfileActivity.class);
-                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                    finish();
-                                    startActivity(intent);
-                                }
-                            }
-
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                            }
-                        });
-                    }else{
-                        Intent intent = new Intent(SplashActivity.this,StartActivity.class);
-                        finish();
-                        startActivity(intent);
-                    }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
+                }
+
+                if(firebaseUser!=null){
+                    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("User").child(auth.getCurrentUser().getPhoneNumber());//current user references
+                    //counting current user data
+                    databaseReference.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            int count = (int) dataSnapshot.getChildrenCount();
+                            Toast.makeText(SplashActivity.this, ""+dataSnapshot, Toast.LENGTH_SHORT).show();
+                            if (count>=7 && !isLocationEnabled()){
+                                Intent intent = new Intent(SplashActivity.this,DiscoverableActivity.class);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                finish();
+                                startActivity(intent);
+                               // onDestroy();
+                            }else if (count>=7 && isLocationEnabled()){
+                                Toast.makeText(SplashActivity.this, ""+count, Toast.LENGTH_SHORT).show();
+                                Intent intent = new Intent(SplashActivity.this,HomeActivity.class);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                finish();
+                                startActivity(intent);
+                                //onDestroy();
+                            }
+                            else if(count<=6){
+                                Intent intent = new Intent(SplashActivity.this, SetupProfileActivity.class);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                finish();
+                                startActivity(intent);
+                                //onDestroy();
+                            }
+                            else if (count <= 5 && !dataSnapshot.hasChild("Current home city")){
+                                Toast.makeText(SplashActivity.this, "yes", Toast.LENGTH_SHORT).show();
+                                Intent intent = new Intent(SplashActivity.this, CurrentLocationSetupActivity.class);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                finish();
+                                startActivity(intent);
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+                }else{
+                    Intent intent = new Intent(SplashActivity.this,StartActivity.class);
+                    finish();
+                    startActivity(intent);
                 }
             }
         };
         thread.start();
-
-
     }
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
+
     private boolean isLocationEnabled() {
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ||

@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -32,6 +33,7 @@ public class PhoneNumberConfirmationActivity extends AppCompatActivity {
     private String verificationId;
     ProgressDialog progressBar;
     ProgressDialog progressDialog;
+    TextView phoneNumberTv;
     FirebaseAuth auth;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,11 +43,14 @@ public class PhoneNumberConfirmationActivity extends AppCompatActivity {
         auth = FirebaseAuth.getInstance();
         codeEt = findViewById(R.id.codeEt);
 
+        phoneNumberTv = findViewById(R.id.textView3);
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Please wait");
 
         String phoneNumber = getIntent().getStringExtra("phoneNumber");
+        phoneNumberTv.setText("Veriy "+phoneNumber);
         sendVerificationCode(phoneNumber);
+
     }
 
     private PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallback = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
@@ -66,6 +71,7 @@ public class PhoneNumberConfirmationActivity extends AppCompatActivity {
         public void onVerificationFailed(FirebaseException e) {
             Toast.makeText(PhoneNumberConfirmationActivity.this, "Verification  try again", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(PhoneNumberConfirmationActivity.this,VerifyPhoneNumberActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             finish();
             startActivity(intent);
             //Log.d("exception",e.toString());
@@ -111,24 +117,27 @@ public class PhoneNumberConfirmationActivity extends AppCompatActivity {
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                     int count = (int) dataSnapshot.getChildrenCount();
-                                    if (count>1 && !isLocationEnabled()){//if database value count > than 1 then this condition will be work
+                                    if (count>=7 && !isLocationEnabled()){//if database value count > than 1 then this condition will be work
                                         Intent intent = new Intent(PhoneNumberConfirmationActivity.this,DiscoverableActivity.class);
                                         Toast.makeText(PhoneNumberConfirmationActivity.this, "Not enabled man !", Toast.LENGTH_SHORT).show();
+                                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                         progressDialog.dismiss();
                                         finish();
                                         startActivity(intent);
-                                    }else if (count>1 && isLocationEnabled()){
-                                        Intent intent = new Intent(PhoneNumberConfirmationActivity.this,SignInActivity.class);//dummy activity
-                                        progressDialog.dismiss();
+                                    }else if (count>=7 && isLocationEnabled()){
+                                        Intent intent = new Intent(PhoneNumberConfirmationActivity.this,HomeActivity.class);//dummy activity
+                                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                         finish();
+                                        progressDialog.dismiss();
                                         startActivity(intent);
                                     }
                                     else{
                                         //Toast.makeText(PhoneNumberConfirmationActivity.this, "Phone number confirmation successful", Toast.LENGTH_SHORT).show();
                                         Intent intent = new Intent(PhoneNumberConfirmationActivity.this, SetupProfileActivity.class);
                                         databaseReference.child("User id").setValue(task.getResult().getUser().getUid());
-                                        progressDialog.dismiss();
+                                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                         finish();
+                                        progressDialog.dismiss();
                                         startActivity(intent);
                                     }
                                 }
