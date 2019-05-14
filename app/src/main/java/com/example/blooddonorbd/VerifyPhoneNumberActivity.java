@@ -55,6 +55,7 @@ public class VerifyPhoneNumberActivity extends AppCompatActivity {
                     return;
                 }
                 Intent intent = new Intent(VerifyPhoneNumberActivity.this, PhoneNumberConfirmationActivity.class);
+                //intent.putExtra()
                 finish();
                 intent.putExtra("phoneNumber",ccp.getFullNumberWithPlus());
                 startActivity(intent);

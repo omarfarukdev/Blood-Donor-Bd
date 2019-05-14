@@ -76,6 +76,8 @@ public class DiscoverableActivity extends AppCompatActivity {
     public void nextBtOnDiscoverableAc(View view) {
         //FirebaseAuth.getInstance().signOut();
         Intent intent = new Intent(DiscoverableActivity.this,HomeActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        finish();
         startActivity(intent);
     }
 

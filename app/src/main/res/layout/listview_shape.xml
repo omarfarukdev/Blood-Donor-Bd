@@ -24,8 +24,8 @@
 
         <ImageView
             android:id="@+id/imageView"
-            android:layout_width="74dp"
-            android:layout_height="81dp"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
             android:layout_marginStart="8dp"
             android:layout_marginLeft="8dp"
             android:layout_marginTop="8dp"
@@ -50,7 +50,8 @@
             android:layout_marginRight="8dp"
             android:layout_marginBottom="8dp"
             android:text="Omar Faruk"
-            android:textSize="20dp"
+            android:textSize="18dp"
+            android:textColor="#047400"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
@@ -59,6 +60,7 @@
             app:layout_constraintVertical_bias="0.166" />
 
         <TextView
+            android:id="@+id/addressTv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
@@ -68,7 +70,9 @@
             android:layout_marginRight="8dp"
             android:layout_marginBottom="8dp"
             android:text="Road 120,Sector 5,Uttara Model Town"
-            android:textSize="18dp"
+            android:textSize="16dp"
+            android:maxLines="1"
+            android:ellipsize="end"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
