@@ -51,7 +51,7 @@ public class SplashActivity extends AppCompatActivity {
                 if(firebaseUser!=null){
                     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("User").child(auth.getCurrentUser().getPhoneNumber());//current user references
                     //counting current user data
-                    databaseReference.addValueEventListener(new ValueEventListener() {
+                    /*databaseReference.addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             int count = (int) dataSnapshot.getChildrenCount();
@@ -77,12 +77,39 @@ public class SplashActivity extends AppCompatActivity {
                                 startActivity(intent);
                                 //onDestroy();
                             }
-                            else if (count <= 5 && !dataSnapshot.hasChild("Current home city")){
-                                Toast.makeText(SplashActivity.this, "yes", Toast.LENGTH_SHORT).show();
-                                Intent intent = new Intent(SplashActivity.this, CurrentLocationSetupActivity.class);
+
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });*/
+                    databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            int count = (int) dataSnapshot.getChildrenCount();
+                            //Toast.makeText(SplashActivity.this, ""+dataSnapshot.getChildrenCount(), Toast.LENGTH_SHORT).show();
+                            if (count>=7 && !isLocationEnabled()){
+                                Intent intent = new Intent(SplashActivity.this,DiscoverableActivity.class);
                                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                 finish();
                                 startActivity(intent);
+                                // onDestroy();
+                            }else if (count>=7 && isLocationEnabled()){
+                                Toast.makeText(SplashActivity.this, ""+count, Toast.LENGTH_SHORT).show();
+                                Intent intent = new Intent(SplashActivity.this,HomeActivity.class);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                finish();
+                                startActivity(intent);
+                                //onDestroy();
+                            }
+                            else if(count<=6){
+                                Intent intent = new Intent(SplashActivity.this, SetupProfileActivity.class);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                finish();
+                                startActivity(intent);
+                                //onDestroy();
                             }
                         }
 
