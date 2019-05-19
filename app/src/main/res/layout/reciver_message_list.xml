@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingVertical="10dp"
+    android:paddingLeft="15dp"
+    android:paddingRight="60dp"
+    android:clipToPadding="false"
+    >
+
+    <View
+        android:id="@+id/avatar"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="2dp"
+        android:layout_marginTop="5dp"
+        android:background="@drawable/ellipse_17"
+        android:scaleType="centerInside" />
+
+
+    <TextView
+        android:id="@+id/recivemessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="4dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="0dp"
+        android:layout_toEndOf="@+id/avatar"
+        android:layout_toRightOf="@+id/avatar"
+        android:background="@drawable/their_message"
+        android:elevation="2dp"
+        android:padding="5dp"
+        android:textColor="#FFF"
+        android:text="How are you doing? This is a long message that should probably wrap."
+        android:textSize="15dp" />
+
+    <TextView
+        android:id="@+id/reciverdate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/recivemessage"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_marginStart="38dp"
+        android:layout_marginLeft="25dp"
+        android:textColor="#9C9A9A"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="2dp"
+        android:text="17-May-2019"
+        android:textSize="10dp" />
+
+</RelativeLayout>
