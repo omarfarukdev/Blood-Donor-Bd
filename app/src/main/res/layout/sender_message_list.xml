@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:paddingVertical="10dp"
+    android:paddingRight="15dp"
+    android:paddingLeft="60dp"
+    android:clipToPadding="false"
+    android:layout_gravity="right">
+    <View
+        android:id="@+id/avatar"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginRight="2dp"
+        android:layout_marginTop="5dp"
+        android:background="@drawable/ellipse_17"
+        android:scaleType="centerInside" />
+
+    <TextView
+        android:id="@+id/sendermessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="5dp"
+        android:layout_marginRight="2dp"
+        android:layout_toStartOf="@+id/avatar"
+        android:layout_toLeftOf="@+id/avatar"
+        android:elevation="2dp"
+        android:background="@drawable/my_message"
+        android:padding="5dp"
+        android:text="Placeholder message"
+        android:textColor="#fff"
+        android:textSize="15dp" />
+
+    <TextView
+        android:id="@+id/sendermessagedate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/sendermessage"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="38dp"
+        android:layout_marginRight="268dp"
+        android:text="17-May-2019"
+        android:textColor="#9E9E9E"
+        android:textSize="10dp"
+        />
+
+</RelativeLayout>
