@@ -72,7 +72,7 @@ public class SetupPersonalInfoFragment extends Fragment {
                         calendar1.set(Calendar.YEAR, year);
                         calendar1.set(Calendar.MONTH, month);
                         calendar1.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-                        lastDonationDate.setText(dayOfMonth+"/"+month+"/"+year);
+                        lastDonationDate.setText(dayOfMonth+"/"+(month+1)+"/"+year);
                     }
                 };
                 new DatePickerDialog(getActivity(), date, calendar1.get(Calendar.YEAR), calendar1.get(Calendar.MONTH), calendar1.get(Calendar.DAY_OF_MONTH)).show();
@@ -81,7 +81,7 @@ public class SetupPersonalInfoFragment extends Fragment {
         });
 
 
-        final Calendar calendar2 = Calendar.getInstance();
+        final java.util.Calendar calendar2 = java.util.Calendar.getInstance();
 
         mLocationManager = (LocationManager)getActivity().getSystemService(Context.LOCATION_SERVICE);
         dateOfBirth.setOnClickListener(new View.OnClickListener() {
@@ -93,7 +93,7 @@ public class SetupPersonalInfoFragment extends Fragment {
                         calendar2.set(Calendar.YEAR, year);
                         calendar2.set(Calendar.MONTH, month);
                         calendar2.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-                        dateOfBirth.setText(dayOfMonth+"/"+month+"/"+year);
+                        dateOfBirth.setText(dayOfMonth+"/"+(month+1)+"/"+year);
                     }
                 };
                 new DatePickerDialog(getActivity(), date, calendar2.get(Calendar.YEAR), calendar2.get(Calendar.MONTH), calendar2.get(Calendar.DAY_OF_MONTH)).show();

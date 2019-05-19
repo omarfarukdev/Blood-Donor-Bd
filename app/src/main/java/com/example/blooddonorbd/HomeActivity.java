@@ -25,6 +25,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -61,6 +62,7 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
     TextView currentLocationTv, donotNumberTv;
     String fullAddress, city, country, state,road,bloodGroup,spinnerSelectedItem;
     private FusedLocationProviderClient fusedLocationClient;
+    ImageView userimage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +73,7 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
         currentLocationTv = findViewById(R.id.currentlocation);
         donotNumberTv = findViewById(R.id.donorNumberTv);
         bloodGroupSpinner = findViewById(R.id.bloodgroupSpHome);
+        userimage=findViewById(R.id.imageView6);
 
         //service started here
         Intent i = new Intent(getApplicationContext(), LocationService.class);
@@ -83,7 +86,7 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
         adapter_option.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         bloodGroupSpinner.setAdapter(adapter_option);
         //bloodGroupSpinner.setSelection(2);
-        spinnerSelectedItem = bloodGroupSpinner.getSelectedItem().toString();
+       // spinnerSelectedItem = bloodGroupSpinner.getSelectedItem().toString();
         bloodGroupSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -93,6 +96,14 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
 
+            }
+        });
+
+        userimage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(HomeActivity.this,ProfileActivity.class);
+                startActivity(intent);
             }
         });
 
@@ -218,7 +229,7 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
                                                 String[] deviceCity = city.split(" ");
 
                                                     if (!d.getKey().equals(FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber()) &&(d.child("Location").getValue().equals("On")) && (d.child("Full address").getValue().equals(fullAddress))){
-                                                        Toast.makeText(HomeActivity.this, ""+d.child("Full Name").getValue(), Toast.LENGTH_SHORT).show();
+                                                        //Toast.makeText(HomeActivity.this, ""+d.child("Full Name").getValue(), Toast.LENGTH_SHORT).show();
 
                                                         c++;
                                                     }else if(!d.getKey().equals(FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber())&& (d.child("Location").getValue().equals("On"))&&
