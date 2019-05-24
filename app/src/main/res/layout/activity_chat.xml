@@ -7,7 +7,7 @@
     android:orientation="vertical"
     android:weightSum="10"
     android:background="#fff"
-    tools:context=".ChatActivity">
+    tools:context=".ChatActivity"
     android:id="@+id/chatActivity">
 
     <android.support.v7.widget.Toolbar
