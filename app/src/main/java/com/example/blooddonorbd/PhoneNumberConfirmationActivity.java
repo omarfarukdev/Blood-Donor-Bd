@@ -5,10 +5,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.location.LocationManager;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,6 +37,8 @@ public class PhoneNumberConfirmationActivity extends AppCompatActivity {
     ProgressDialog progressDialog;
     TextView phoneNumberTv;
     FirebaseAuth auth;
+    ConstraintLayout constraintLayout;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,6 +46,7 @@ public class PhoneNumberConfirmationActivity extends AppCompatActivity {
         ///getSupportActionBar().hide();
         auth = FirebaseAuth.getInstance();
         codeEt = findViewById(R.id.codeEt);
+        constraintLayout = findViewById(R.id.phoneNumberConfActivity);
 
         phoneNumberTv = findViewById(R.id.textView3);
         progressDialog = new ProgressDialog(this);
@@ -113,18 +118,18 @@ public class PhoneNumberConfirmationActivity extends AppCompatActivity {
                         if(task.isSuccessful()){
                             final DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("User").child(task.getResult().getUser().getPhoneNumber());
                             //reading database value
-                            databaseReference.addValueEventListener(new ValueEventListener() {
+                            databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                     int count = (int) dataSnapshot.getChildrenCount();
-                                    if (count>=7 && !isLocationEnabled()){//if database value count > than 1 then this condition will be work
+                                    if (count>=7 && !isLocationEnabled() && constraintLayout.getVisibility() == View.VISIBLE){//if database value count > than 1 then this condition will be work
                                         Intent intent = new Intent(PhoneNumberConfirmationActivity.this,DiscoverableActivity.class);
                                         Toast.makeText(PhoneNumberConfirmationActivity.this, "Not enabled man !", Toast.LENGTH_SHORT).show();
                                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                         progressDialog.dismiss();
                                         finish();
                                         startActivity(intent);
-                                    }else if (count>=7 && isLocationEnabled()){
+                                    }else if (count>=7 && isLocationEnabled() && constraintLayout.getVisibility() == View.VISIBLE){
                                         Intent intent = new Intent(PhoneNumberConfirmationActivity.this,HomeActivity.class);//dummy activity
                                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                         finish();

@@ -1,6 +1,7 @@
 package com.example.blooddonorbd;
 
 import android.content.Intent;
+import android.location.Location;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -276,7 +277,7 @@ public class ResultActivity extends AppCompatActivity {
                                    else if ((splitString2(fullAddress) > 2 /*&& (checkState(stateList,deviceState) == true) &&//search like "Khilkhet,Dhaka,Bangladesh"
                                            (checkCity(cityList,deviceCity) == true)) || (splitString2(fullAddress) > 2 && (checkState(stateList,deviceState) == true) &&//search like "Khilkhet,Dhaka,Bangladesh"
                                            (checkCity(cityList,deviceCity) == true) && checkCity(roadList,deviceRoad))*/)){
-                                       if (distance(dbLatitude,dbLongitude,latitude,longitude) < 0.6 ){//finding user around 5 miles
+                                       if (distance(dbLatitude,dbLongitude,latitude,longitude) < 5000 ){//finding user around 5 miles
                                            fName = d.child("Full Name").getValue().toString();
                                            address = d.child("Full address").getValue().toString();
                                            dateOfBirth = d.child("Date of birth").getValue().toString();
@@ -323,7 +324,7 @@ public class ResultActivity extends AppCompatActivity {
     /** calculates the distance between two locations in MILES */
     private double distance(double lat1, double lng1, double lat2, double lng2) {
 
-        double earthRadius = 3958.75; // in miles, change to 6371 for kilometer output
+        /*double earthRadius = 3958.75; // in miles, change to 6371 for kilometer output
 
         double dLat = Math.toRadians(lat2-lat1);
         double dLng = Math.toRadians(lng2-lng1);
@@ -338,6 +339,15 @@ public class ResultActivity extends AppCompatActivity {
 
         double dist = earthRadius * c;
 
-        return dist; // output distance, in MILES
+        return dist; // output distance, in MILES*/
+
+        Location startPoint=new Location("locationA");
+        startPoint.setLatitude(lat1);
+        startPoint.setLongitude(lng1);
+
+        Location endPoint=new Location("locationA");
+        endPoint.setLatitude(lat2);
+        endPoint.setLongitude(lng2);
+        return  startPoint.distanceTo(endPoint);
     }
 }

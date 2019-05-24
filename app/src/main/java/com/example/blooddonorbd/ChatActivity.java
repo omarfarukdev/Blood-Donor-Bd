@@ -56,7 +56,7 @@ public class ChatActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
       
-        getSupportActionBar().hide();
+//        getSupportActionBar().hide();
         backbt = findViewById(R.id.backbt);
         name = findViewById(R.id.recivername);
         phoneno = findViewById(R.id.reciverphone);
