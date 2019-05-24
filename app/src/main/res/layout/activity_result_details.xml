@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".ResultDetails"
+    android:background="#ffffff"
     android:weightSum="10">
 
     <LinearLayout
@@ -231,12 +232,8 @@
                 android:id="@+id/linearLayout5"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginRight="8dp"
-                android:layout_marginBottom="8dp"
                 android:weightSum="10"
+                android:padding="5dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent">
@@ -245,8 +242,9 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_margin="5dp"
+                    android:padding="10dp"
                     android:layout_weight="5"
-                    android:background="#F52020"
+                    android:background="@drawable/button_background"
                     android:onClick="msgBt"
                     android:text="Message"
                     android:textColor="#FFFFFF" />
@@ -256,9 +254,9 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="5dp"
                     android:layout_weight="5"
-                    android:background="#F52020"
+                    android:background="@drawable/button_background"
                     android:onClick="callBt"
-                    android:padding="2dp"
+                    android:padding="10dp"
                     android:text="Call"
                     android:textColor="#FFFFFF" />
             </LinearLayout>

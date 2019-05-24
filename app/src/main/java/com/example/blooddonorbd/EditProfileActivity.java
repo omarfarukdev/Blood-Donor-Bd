@@ -33,7 +33,7 @@ public class EditProfileActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_profile);
-        getSupportActionBar().hide();
+        //getSupportActionBar().hide();
 
         birthdate=findViewById(R.id.dateOfBirthEt);
         phoneno=findViewById(R.id.phonenumber);

@@ -24,7 +24,7 @@ public class SignInActivity extends AppCompatActivity {
 
 
         setContentView(R.layout.activity_sign_in);
-        getSupportActionBar().hide();
+        //getSupportActionBar().hide();
 
         //Intent i = new Intent(getApplicationContext(), LocationService.class);
         //startService(i);

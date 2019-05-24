@@ -39,7 +39,7 @@ public class PhoneNumberConfirmationActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_phone_number_confirmation);
-        getSupportActionBar().hide();
+        ///getSupportActionBar().hide();
         auth = FirebaseAuth.getInstance();
         codeEt = findViewById(R.id.codeEt);
 

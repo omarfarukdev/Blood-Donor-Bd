@@ -39,6 +39,7 @@ public class SplashActivity extends AppCompatActivity {
         final FirebaseAuth auth;
         auth = FirebaseAuth.getInstance();
         final FirebaseUser firebaseUser = auth.getCurrentUser();
+
         getSupportActionBar().hide();//hiding actionbar
         linearLayout = findViewById(R.id.splachActivity);
 

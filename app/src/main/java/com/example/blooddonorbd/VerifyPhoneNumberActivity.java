@@ -24,7 +24,7 @@ public class VerifyPhoneNumberActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_verify_phone_number);
-        getSupportActionBar().hide();
+        //getSupportActionBar().hide();
 
         ccp = findViewById(R.id.ccp);
         phoneNumber = findViewById(R.id.phoneNumber);

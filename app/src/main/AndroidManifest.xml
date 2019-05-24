@@ -6,6 +6,8 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+
 
     <application
         android:allowBackup="true"
@@ -13,8 +15,14 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
-        <activity android:name=".NotificationActivity"></activity>
+        android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+        <activity android:name=".HospitalActivity"></activity>
+        <activity android:name=".EmergencyCallActivity" />
+        <activity android:name=".BloodOrganizationActivity" />
+        <activity android:name=".BloodBankActivity" />
+        <activity android:name=".AmbulanceActivity" />
+        <activity android:name=".HelpActivity" />
+        <activity android:name=".NotificationActivity" />
         <activity android:name=".SettingActivity" />
         <activity android:name=".ChatActivity" />
         <activity android:name=".MessagesActivity" />

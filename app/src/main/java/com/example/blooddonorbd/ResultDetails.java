@@ -23,7 +23,7 @@ public class ResultDetails extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_result_details);
 
-        getSupportActionBar().hide();
+        //getSupportActionBar().hide();
 
         nameTv = findViewById(R.id.nameTv);
         dateTv = findViewById(R.id.dateTv);

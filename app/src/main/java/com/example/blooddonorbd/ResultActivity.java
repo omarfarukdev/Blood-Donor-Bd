@@ -52,8 +52,6 @@ public class ResultActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_result);
 
-        getSupportActionBar().hide();
-
         listView = findViewById(R.id.userListListView);
         bloodGrpTv = findViewById(R.id.bloodgrpTv);
         noOfDonorTv = findViewById(R.id.noOfDonotTv);
