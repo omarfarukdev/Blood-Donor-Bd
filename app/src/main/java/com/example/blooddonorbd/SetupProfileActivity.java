@@ -64,7 +64,7 @@ public class SetupProfileActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setup_profile);
-        getSupportActionBar().hide();//hiding actionbar here
+        //getSupportActionBar().hide();//hiding actionbar here
 
        /* //all views initializing here
         fullName = findViewById(R.id.fullNameEt);

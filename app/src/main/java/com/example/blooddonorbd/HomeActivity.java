@@ -69,7 +69,7 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        getSupportActionBar().hide();
+//        getSupportActionBar().hide();
         currentLocationTv = findViewById(R.id.currentlocation);
         donotNumberTv = findViewById(R.id.donorNumberTv);
         bloodGroupSpinner = findViewById(R.id.bloodgroupSpHome);
@@ -99,14 +99,6 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
             }
         });
 
-        userimage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent=new Intent(HomeActivity.this,ProfileActivity.class);
-                startActivity(intent);
-            }
-        });
-
         donotNumberTv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -117,6 +109,14 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);//fusedLocation provider client
 
         getLocation();
+        userimage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(HomeActivity.this,ProfileActivity.class);
+                intent.putExtra("city",city);
+                startActivity(intent);
+            }
+        });
     }
 
     @Override

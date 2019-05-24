@@ -36,7 +36,7 @@ public class SplashActivity extends AppCompatActivity {
         final FirebaseAuth auth;
         auth = FirebaseAuth.getInstance();
         final FirebaseUser firebaseUser = auth.getCurrentUser();
-        getSupportActionBar().hide();//hiding actionbar
+//        getSupportActionBar().hide();//hiding actionbar
 
         //thread for launching another activity
         Thread thread = new Thread(){

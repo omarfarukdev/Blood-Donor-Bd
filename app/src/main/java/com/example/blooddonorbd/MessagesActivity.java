@@ -10,7 +10,7 @@ public class MessagesActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_messages);
-        getSupportActionBar().hide();
+       // getSupportActionBar().hide();
     }
 
     public void backBt(View view) {

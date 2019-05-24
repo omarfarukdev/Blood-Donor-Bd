@@ -18,22 +18,23 @@ import com.google.firebase.database.ValueEventListener;
 
 public class ProfileActivity extends AppCompatActivity {
     TextView username,usernumber;
-    CardView message,setting,logout,notification;
-    String currentnumber,name;
+    CardView message,setting,logout,notification,help;
+    String currentnumber,name,city;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
-        getSupportActionBar().hide();
+       // getSupportActionBar().hide();
         username=findViewById(R.id.username);
         usernumber=findViewById(R.id.usernumber);
         message=findViewById(R.id.message);
         notification=findViewById(R.id.notification);
         setting=findViewById(R.id.setting);
         logout=findViewById(R.id.logout);
-
+        help=findViewById(R.id.help);
+        city = getIntent().getStringExtra("city");
         currentnumber=FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber();
         usernumber.setText(currentnumber);
 
@@ -82,6 +83,14 @@ public class ProfileActivity extends AppCompatActivity {
             public void onClick(View v) {
                 FirebaseAuth.getInstance().signOut();
                 finish();
+            }
+        });
+        help.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(ProfileActivity.this,HelpActivity.class);
+                intent.putExtra("city",city);
+                startActivity(intent);
             }
         });
     }
