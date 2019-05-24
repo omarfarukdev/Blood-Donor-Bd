@@ -5,6 +5,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,19 +20,27 @@ import com.google.android.gms.common.api.Status;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.android.libraries.places.widget.Autocomplete;
+import com.google.android.libraries.places.widget.AutocompleteActivity;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
+import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.seatgeek.placesautocomplete.PlacesAutocompleteTextView;
 import java.util.Arrays;
+import java.util.List;
+
+import static android.app.Activity.RESULT_CANCELED;
+import static android.app.Activity.RESULT_OK;
 
 
 // TODO: Rena * create an instance of this fragment.
     // */
     public class SetupHomeAddressFragment extends Fragment {
-        Button button;
+
+        Button button,searchBt;
     TextView placeName;
     String currentLocation,placeNamee;
     int REQUEST_CODE =1;
@@ -44,6 +53,7 @@ import java.util.Arrays;
         View view =  inflater.inflate(R.layout.fragment_setup_home_address, container, false);
         button = view.findViewById(R.id.btIdOnsetupInfo);
         placeName = view.findViewById(R.id.placeNameTv);
+        searchBt = view.findViewById(R.id.searchBt);
 
         final Bundle bundle=getArguments();
 
@@ -61,8 +71,8 @@ import java.util.Arrays;
             Places.initialize(getActivity().getApplicationContext(), "AIzaSyDPci6XtzK5LMbXvILYVQNj8CPI7qUArdg");
         }
         // Initialize the AutocompleteSupportFragment.
-         AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment) getChildFragmentManager().findFragmentById(R.id.autocomplete_fragment);
-         autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ADDRESS, Place.Field.NAME));
+         //AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment) getChildFragmentManager().findFragmentById(R.id.autocomplete_fragment);
+         /*autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ADDRESS, Place.Field.NAME));
 
          autocompleteFragment.setHint("Current home address");
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
@@ -80,7 +90,20 @@ import java.util.Arrays;
             public void onError(@NonNull Status status) {
                 Toast.makeText(getActivity(), ""+status, Toast.LENGTH_SHORT).show();
             }
-        });
+        });*/
+
+         searchBt.setOnClickListener(new View.OnClickListener() {
+             @Override
+             public void onClick(View v) {
+                 List<Place.Field> fields = Arrays.asList(Place.Field.ADDRESS, Place.Field.NAME);
+                 // Start the autocomplete intent.
+                 Intent intent = new Autocomplete.IntentBuilder(
+                         AutocompleteActivityMode.FULLSCREEN, fields)
+                         .build(getActivity());
+                 startActivityForResult(intent, REQUEST_CODE);
+             }
+         });
+
 
       button.setOnClickListener(new View.OnClickListener() {
           @Override
@@ -133,6 +156,30 @@ import java.util.Arrays;
         LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
                 locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+    }
+
+    /**
+     * Override the activity's onActivityResult(), check the request code, and
+     * do something with the returned place data (in this example it's place name and place ID).
+     */
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                Place place = Autocomplete.getPlaceFromIntent(data);
+                //Log.d("pl", "Place: " + place.getName() + ", " + place.getId());
+                //Toast.makeText(getActivity(), ""+place.getAddress(), Toast.LENGTH_SHORT).show();
+
+                currentLocation = place.getAddress();
+                placeNamee = place.getName();
+            } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
+                // TODO: Handle the error.
+                Status status = Autocomplete.getStatusFromIntent(data);
+                //Log.i(TAG, status.getStatusMessage());
+            } else if (resultCode == RESULT_CANCELED) {
+                // The user canceled the operation.
+            }
+        }
     }
 
 }
