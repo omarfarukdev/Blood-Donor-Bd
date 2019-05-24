@@ -34,27 +34,30 @@ public class ProfileActivity extends AppCompatActivity {
         setting=findViewById(R.id.setting);
         logout=findViewById(R.id.logout);
 
-        currentnumber=FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber();
-        usernumber.setText(currentnumber);
+        try {
+            currentnumber=FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber();
+            usernumber.setText(currentnumber);
 
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("User").child(currentnumber);
-        databaseReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot d:dataSnapshot.getChildren()){
+            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("User").child(currentnumber);
+            databaseReference.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    for (DataSnapshot d:dataSnapshot.getChildren()){
                         if (d.getKey().equals("Full Name")){
                             name=d.getValue().toString();
                             username.setText(name);
                         }
+                    }
+
                 }
 
-            }
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+                }
+            });
+        }catch (Exception e){}
 
-            }
-        });
 
         message.setOnClickListener(new View.OnClickListener() {
             @Override
