@@ -63,6 +63,7 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
     String fullAddress, city, country, state,road,bloodGroup,spinnerSelectedItem;
     private FusedLocationProviderClient fusedLocationClient;
     ImageView userimage;
+    double latitude,longitude;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -158,7 +159,10 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
                                 addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
                                 Address obj = addresses.get(0);
 
-                                final String fullAddress = obj.getAddressLine(0);
+                                fullAddress = obj.getAddressLine(0);
+
+                                latitude = location.getLatitude();
+                                longitude = location.getLongitude();
 
                                 String[] sp = fullAddress.split(",");
 
@@ -221,6 +225,10 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
                                             try {
                                                 String statee = d.child("State").getValue().toString();
                                                 String city = d.child("City").getValue().toString();
+                                                String bloodGrp = d.child("Blood Group").getValue().toString();
+
+                                                double dbLatitude = Double.parseDouble(d.child("Latitude").getValue().toString());
+                                                double dbLongitude = Double.parseDouble(d.child("Longitude").getValue().toString());
 
                                                 String[] stateList = statee.split(" ");
                                                 String[] cityList = city.split(" ");
@@ -228,7 +236,7 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
                                                 String[] deviceState = state.split(" ");
                                                 String[] deviceCity = city.split(" ");
 
-                                                    if (!d.getKey().equals(FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber()) &&(d.child("Location").getValue().equals("On")) && (d.child("Full address").getValue().equals(fullAddress))){
+                                                    if (!d.getKey().equals(FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber()) &&(d.child("Location").getValue().equals("On")) && spinnerSelectedItem.equals(bloodGrp)  && distance(latitude,longitude,dbLatitude,dbLongitude)<0.6/*(d.child("Full address").getValue().equals(fullAddress))*/){
                                                         //Toast.makeText(HomeActivity.this, ""+d.child("Full Name").getValue(), Toast.LENGTH_SHORT).show();
 
                                                         c++;
@@ -281,7 +289,10 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
         intent.putExtra("country",country);
         intent.putExtra("city",city);
         intent.putExtra("state",state);
+        intent.putExtra("road",road);
         intent.putExtra("bloodGroup",spinnerSelectedItem);
+        intent.putExtra("latitude",latitude);
+        intent.putExtra("longitude",longitude);
         Toast.makeText(this, ""+spinnerSelectedItem, Toast.LENGTH_SHORT).show();
         try{
             intent.putExtra("road",road);
@@ -304,5 +315,25 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
             }
         }
         return false;
+    }
+
+    private double distance(double lat1, double lng1, double lat2, double lng2) {
+
+        double earthRadius = 3958.75; // in miles, change to 6371 for kilometer output
+
+        double dLat = Math.toRadians(lat2-lat1);
+        double dLng = Math.toRadians(lng2-lng1);
+
+        double sindLat = Math.sin(dLat / 2);
+        double sindLng = Math.sin(dLng / 2);
+
+        double a = Math.pow(sindLat, 2) + Math.pow(sindLng, 2)
+                * Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2));
+
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+
+        double dist = earthRadius * c;
+
+        return dist; // output distance, in MILES
     }
 }
