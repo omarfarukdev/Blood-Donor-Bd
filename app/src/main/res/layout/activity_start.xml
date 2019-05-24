@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     android:background="#DF1B1B"
     tools:context=".StartActivity"
+    android:padding="10dp"
     android:orientation="vertical"
     android:weightSum="10">
 
@@ -60,10 +61,14 @@
             android:gravity="center">
             <Button
                 android:onClick="getStartedBt"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@drawable/start_button_background"
                 android:text="Get started"
-
+                android:padding="10dp"
+                android:textColor="#047400"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
                 android:textAllCaps="false" />
         </LinearLayout>
 

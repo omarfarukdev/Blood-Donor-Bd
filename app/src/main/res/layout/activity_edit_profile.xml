@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".EditProfileActivity"
     android:orientation="vertical"
+    android:padding="5dp"
     android:weightSum="10">
 
   <android.support.v7.widget.Toolbar
@@ -222,7 +223,7 @@
         android:layout_marginRight="20dp"
         android:layout_marginLeft="20dp"
         android:text="Save"
-        android:background="#F52020"
+        android:background="@drawable/button_background"
         android:padding="10dp"
         android:textColor="#F5F3F3"
         android:layout_marginBottom="10dp"/>
