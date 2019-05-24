@@ -6,6 +6,8 @@ import android.location.LocationManager;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -18,6 +20,7 @@ import com.google.firebase.database.ValueEventListener;
 
 public class SplashActivity extends AppCompatActivity {
 
+    LinearLayout linearLayout;
     //disabling backpress
     @Override
     public void onBackPressed() {
@@ -37,6 +40,7 @@ public class SplashActivity extends AppCompatActivity {
         auth = FirebaseAuth.getInstance();
         final FirebaseUser firebaseUser = auth.getCurrentUser();
         getSupportActionBar().hide();//hiding actionbar
+        linearLayout = findViewById(R.id.splachActivity);
 
         //thread for launching another activity
         Thread thread = new Thread(){
@@ -50,53 +54,20 @@ public class SplashActivity extends AppCompatActivity {
 
                 if(firebaseUser!=null){
                     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("User").child(auth.getCurrentUser().getPhoneNumber());//current user references
-                    //counting current user data
-                    /*databaseReference.addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            int count = (int) dataSnapshot.getChildrenCount();
-                            Toast.makeText(SplashActivity.this, ""+dataSnapshot, Toast.LENGTH_SHORT).show();
-                            if (count>=7 && !isLocationEnabled()){
-                                Intent intent = new Intent(SplashActivity.this,DiscoverableActivity.class);
-                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                finish();
-                                startActivity(intent);
-                               // onDestroy();
-                            }else if (count>=7 && isLocationEnabled()){
-                                Toast.makeText(SplashActivity.this, ""+count, Toast.LENGTH_SHORT).show();
-                                Intent intent = new Intent(SplashActivity.this,HomeActivity.class);
-                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                finish();
-                                startActivity(intent);
-                                //onDestroy();
-                            }
-                            else if(count<=6){
-                                Intent intent = new Intent(SplashActivity.this, SetupProfileActivity.class);
-                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                finish();
-                                startActivity(intent);
-                                //onDestroy();
-                            }
-
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                        }
-                    });*/
+                   // FirebaseDatabase.getInstance().setPersistenceEnabled(true);//offline capabilities
+                    //databaseReference.keepSynced(true);
                     databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             int count = (int) dataSnapshot.getChildrenCount();
                             //Toast.makeText(SplashActivity.this, ""+dataSnapshot.getChildrenCount(), Toast.LENGTH_SHORT).show();
-                            if (count>=7 && !isLocationEnabled()){
+                            if (count>=7 && !isLocationEnabled() && linearLayout.getVisibility() == View.VISIBLE){
                                 Intent intent = new Intent(SplashActivity.this,DiscoverableActivity.class);
                                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                 finish();
                                 startActivity(intent);
                                 // onDestroy();
-                            }else if (count>=7 && isLocationEnabled()){
+                            }else if (count>=7 && isLocationEnabled() && linearLayout.getVisibility() == View.VISIBLE){
                                 Toast.makeText(SplashActivity.this, ""+count, Toast.LENGTH_SHORT).show();
                                 Intent intent = new Intent(SplashActivity.this,HomeActivity.class);
                                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -104,7 +75,7 @@ public class SplashActivity extends AppCompatActivity {
                                 startActivity(intent);
                                 //onDestroy();
                             }
-                            else if(count<=6){
+                            else if(count<=6 && linearLayout.getVisibility() == View.VISIBLE){
                                 Intent intent = new Intent(SplashActivity.this, SetupProfileActivity.class);
                                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                 finish();
