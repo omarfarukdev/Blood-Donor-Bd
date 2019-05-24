@@ -22,6 +22,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -229,6 +230,7 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
 
                                                 double dbLatitude = Double.parseDouble(d.child("Latitude").getValue().toString());
                                                 double dbLongitude = Double.parseDouble(d.child("Longitude").getValue().toString());
+                                                Log.d("llllll",dbLatitude+" "+dbLongitude+" "+distance(latitude,longitude,dbLatitude,dbLongitude));
 
                                                 String[] stateList = statee.split(" ");
                                                 String[] cityList = city.split(" ");
@@ -236,15 +238,15 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
                                                 String[] deviceState = state.split(" ");
                                                 String[] deviceCity = city.split(" ");
 
-                                                    if (!d.getKey().equals(FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber()) &&(d.child("Location").getValue().equals("On")) && spinnerSelectedItem.equals(bloodGrp)  && distance(latitude,longitude,dbLatitude,dbLongitude)<0.6/*(d.child("Full address").getValue().equals(fullAddress))*/){
+                                                    if (!d.getKey().equals(FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber()) &&(d.child("Location").getValue().equals("On")) && spinnerSelectedItem.equals(bloodGrp)  && distance(latitude,longitude,dbLatitude,dbLongitude)<=5000/*(d.child("Full address").getValue().equals(fullAddress))*/){
                                                         //Toast.makeText(HomeActivity.this, ""+d.child("Full Name").getValue(), Toast.LENGTH_SHORT).show();
 
                                                         c++;
-                                                    }else if(!d.getKey().equals(FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber())&& (d.child("Location").getValue().equals("On"))&&
-                                                            (checkString(stateList,deviceState) == true) && (checkString(cityList,deviceCity) == true)){
+                                                    }/*else if(!d.getKey().equals(FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber())&& (d.child("Location").getValue().equals("On"))&&
+                                                            distance(latitude,longitude,dbLatitude,dbLongitude)<0.6){
 
                                                         c++;
-                                                    }
+                                                    }*/
                                                     //else if(!d.getKey().equals(FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber()))
                                                // }
 
@@ -319,7 +321,7 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
 
     private double distance(double lat1, double lng1, double lat2, double lng2) {
 
-        double earthRadius = 3958.75; // in miles, change to 6371 for kilometer output
+       /* double earthRadius = 3958.75; // in miles, change to 6371 for kilometer output
 
         double dLat = Math.toRadians(lat2-lat1);
         double dLng = Math.toRadians(lng2-lng1);
@@ -334,6 +336,16 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
 
         double dist = earthRadius * c;
 
-        return dist; // output distance, in MILES
+        return dist; // output distance, in MILES*/
+
+        Location startPoint=new Location("locationA");
+        startPoint.setLatitude(lat1);
+        startPoint.setLongitude(lng1);
+
+        Location endPoint=new Location("locationA");
+        endPoint.setLatitude(lat2);
+        endPoint.setLongitude(lng2);
+
+        return startPoint.distanceTo(endPoint);
     }
 }
