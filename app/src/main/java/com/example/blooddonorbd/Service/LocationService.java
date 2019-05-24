@@ -42,7 +42,7 @@ public class LocationService extends Service implements LocationListener, Google
     private Location mLocation;
     private LocationManager mLocationManager;
     private LocationRequest mLocationRequest;
-    private long UPDATE_INTERVAL = 2 * 1000;  /* 10 secs */
+    private long UPDATE_INTERVAL = 5 * 1000;  /* 10 secs */
     private long FASTEST_INTERVAL = 2000; /* 2 sec */
 
 
@@ -72,6 +72,7 @@ public class LocationService extends Service implements LocationListener, Google
             databaseReference.child("Location").setValue("On");
         }
     }
+
 
     @Override
     public void onConnected(Bundle bundle) {
@@ -171,10 +172,12 @@ public class LocationService extends Service implements LocationListener, Google
             for(int i=0;i<sp.length;i++){
                 addressList.add(sp[i]);
             }
-            databaseReference.child("Country").setValue(addressList.get(addressList.size()-1));
-            databaseReference.child("City").setValue(addressList.get(addressList.size()-2));
-            databaseReference.child("State").setValue(addressList.get(addressList.size()-3));
+            databaseReference.child("Country").setValue(addressList.get(addressList.size()-1).trim());
+            databaseReference.child("City").setValue(addressList.get(addressList.size()-2).trim());
+            databaseReference.child("State").setValue(addressList.get(addressList.size()-3).trim());
             databaseReference.child("Full address").setValue(fullAddress);
+            databaseReference.child("Latitude").setValue(location.getLatitude());
+            databaseReference.child("Longitude").setValue(location.getLongitude());
 
             try{
                 databaseReference.child("Road").setValue(addressList.get(addressList.size()-4));

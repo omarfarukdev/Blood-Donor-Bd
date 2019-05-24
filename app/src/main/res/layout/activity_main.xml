@@ -6,7 +6,8 @@
     android:layout_height="match_parent"
     android:background="#DF1B1B"
     tools:context=".SplashActivity"
-    android:gravity="center">
+    android:gravity="center"
+    android:id="@+id/splachActivity">
 
     <TextView
         android:layout_width="wrap_content"
