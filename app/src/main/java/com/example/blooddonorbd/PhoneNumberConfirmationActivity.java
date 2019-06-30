@@ -15,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseException;
 import com.google.firebase.auth.AuthResult;
@@ -27,6 +28,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 
 import java.util.concurrent.TimeUnit;
 
@@ -122,15 +125,28 @@ public class PhoneNumberConfirmationActivity extends AppCompatActivity {
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                     int count = (int) dataSnapshot.getChildrenCount();
-                                    if (count>=7 && !isLocationEnabled() && constraintLayout.getVisibility() == View.VISIBLE){//if database value count > than 1 then this condition will be work
+                                    /*FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
+                                        @Override
+                                        public void onSuccess(InstanceIdResult instanceIdResult) {
+                                            String token = instanceIdResult.getToken();
+                                            // send it to server
+                                        }
+                                    });*/
+                                    if (count>=8 && !isLocationEnabled() && constraintLayout.getVisibility() == View.VISIBLE){//if database value count > than 1 then this condition will be work
                                         Intent intent = new Intent(PhoneNumberConfirmationActivity.this,DiscoverableActivity.class);
                                         Toast.makeText(PhoneNumberConfirmationActivity.this, "Not enabled man !", Toast.LENGTH_SHORT).show();
                                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                         progressDialog.dismiss();
                                         finish();
                                         startActivity(intent);
-                                    }else if (count>=7 && isLocationEnabled() && constraintLayout.getVisibility() == View.VISIBLE){
-                                        Intent intent = new Intent(PhoneNumberConfirmationActivity.this,HomeActivity.class);//dummy activity
+                                    }else if (count>=8 && isLocationEnabled() && constraintLayout.getVisibility() == View.VISIBLE){
+                                        Intent intent = new Intent(PhoneNumberConfirmationActivity.this,HomeActivity.class);
+                                        FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
+                                            @Override
+                                            public void onSuccess(InstanceIdResult instanceIdResult) {
+                                                databaseReference.child("Token id").setValue(instanceIdResult.getToken());
+                                            }
+                                        });
                                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                         finish();
                                         progressDialog.dismiss();
@@ -140,6 +156,12 @@ public class PhoneNumberConfirmationActivity extends AppCompatActivity {
                                         //Toast.makeText(PhoneNumberConfirmationActivity.this, "Phone number confirmation successful", Toast.LENGTH_SHORT).show();
                                         Intent intent = new Intent(PhoneNumberConfirmationActivity.this, SetupProfileActivity.class);
                                         databaseReference.child("User id").setValue(task.getResult().getUser().getUid());
+                                        FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
+                                            @Override
+                                            public void onSuccess(InstanceIdResult instanceIdResult) {
+                                                databaseReference.child("Token id").setValue(instanceIdResult.getToken());
+                                            }
+                                        });
                                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                         finish();
                                         progressDialog.dismiss();
@@ -154,9 +176,7 @@ public class PhoneNumberConfirmationActivity extends AppCompatActivity {
                             });
                             Toast.makeText(PhoneNumberConfirmationActivity.this, "Phone number confirmation successful", Toast.LENGTH_SHORT).show();
                         }else {
-                            if(task.getException() instanceof FirebaseAuthInvalidCredentialsException){
-                                Toast.makeText(PhoneNumberConfirmationActivity.this, "Invalid code entered", Toast.LENGTH_SHORT).show();
-                            }
+                            task.getException();
                         }
                     }
                 });

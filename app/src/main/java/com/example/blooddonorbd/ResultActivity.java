@@ -32,8 +32,12 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class ResultActivity extends AppCompatActivity {
@@ -45,9 +49,10 @@ public class ResultActivity extends AppCompatActivity {
     private TextView bloodGrpTv,noOfDonorTv;
     private ImageView searchIm;
     private int REQUEST_CODE = 1;
-    private String searchLocation,searchPlaceNamee;
+    private String searchLocation,searchPlaceNamee,fName;
     double searchLatitude,searchLongitude;
     double deviceLatitude,deviceLongitude;
+    private long diffSeconds,diffMinutes,diffHours,diffDays;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -105,8 +110,6 @@ public class ResultActivity extends AppCompatActivity {
 
         search(fullAddress,state,city,road,deviceLatitude,deviceLongitude);
 
-        Toast.makeText(this, "Oncreate called", Toast.LENGTH_SHORT).show();
-
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -115,6 +118,9 @@ public class ResultActivity extends AppCompatActivity {
                 intent.putExtra("dateOfBirth",userList.get(position).getDateOfBirth());
                 intent.putExtra("gender",userList.get(position).getGender());
                 intent.putExtra("phoneNo",userList.get(position).getPhnNo());
+                intent.putExtra("tokenId",userList.get(position).getToken());
+                intent.putExtra("name",fName);
+
                 startActivity(intent);
             }
         });
@@ -152,7 +158,7 @@ public class ResultActivity extends AppCompatActivity {
     }
 
     public void image(View view) {
-        FirebaseAuth.getInstance().signOut();
+       // FirebaseAuth.getInstance().signOut();
     }
 
     public void backBt(View view) {
@@ -227,7 +233,7 @@ public class ResultActivity extends AppCompatActivity {
                     try {
                         //Log.d("Keyyy",String.valueOf(key));
                         //Toast.makeText(ResultActivity.this, "", Toast.LENGTH_SHORT).show();
-                        String fName,address,dateOfBirth,gender,bldGroup,phnNo;
+                        String address,dateOfBirth,gender,bldGroup,phnNo,deviceToken;
 
 
 
@@ -235,6 +241,34 @@ public class ResultActivity extends AppCompatActivity {
                            String statee = d.child("State").getValue().toString();
                            String city = d.child("City").getValue().toString();
                            String r = d.child("Road").getValue().toString();
+
+                           String userExitTime = d.child("Exit time").getValue().toString();
+
+                           Calendar cal = Calendar.getInstance();
+                           DateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+                           String currentDateandTime = sdf.format(cal.getTime());
+
+                           SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+
+                           Date d1 = null;
+                           Date d2 = null;
+
+                           try {
+                               d1 = format.parse(userExitTime);
+                               d2 = format.parse(currentDateandTime);
+
+                               //in milliseconds
+                               long diff = d2.getTime() - d1.getTime();
+
+                               diffSeconds = diff / 1000 % 60;
+                               diffMinutes = diff / (60 * 1000) % 60;
+                               diffHours = diff / (60 * 60 * 1000) % 24;
+                               diffDays = diff / (24 * 60 * 60 * 1000);
+
+                           } catch (Exception e) {
+                               e.printStackTrace();
+                           }
+
                            double dbLatitude = Double.parseDouble(d.child("Latitude").getValue().toString());
                            double dbLongitude = Double.parseDouble(d.child("Longitude").getValue().toString());
 
@@ -245,10 +279,19 @@ public class ResultActivity extends AppCompatActivity {
                            String[] deviceState = state.split(" ");
                            String[] deviceCity = cityy.split(" ");
                            String[] deviceRoad  = road.split(" ");
-                           if (d.child("Location").getValue().equals("On")){//checking location on or not
+
+                           ArrayList<Long> exitTimeDifList;
+                           try{
+                               exitTimeDifList = dateDifference(userExitTime,currentDateandTime);
+                               diffDays = exitTimeDifList.get(3);
+                               diffHours = exitTimeDifList.get(2);
+                               diffMinutes = exitTimeDifList.get(1);
+                           }catch (Exception e){}
+
+                           if (d.child("Location").getValue().equals("On") ||  diffMinutes <= 30 && diffHours == 0 && diffDays == 0){//checking location on or not
                                if (d.child("Blood Group").getValue().equals(bloodGroup)){//checking blood group here
                                    Log.d("lennnnn",String.valueOf(checkCity(cityList,deviceCity))+" "+splitString2(fullAddress)+" "+String.valueOf((checkState(stateList,deviceState)))
-                                           +" search state = "+state+"  db state="+statee);
+                                           +" search state = "+state+"  db state="+deviceCity);
 
                                    if (splitString2(fullAddress) == 1 && d.child("Country").getValue().toString().trim().equals(fullAddress.trim())){//search like "Bangladesh"
                                        fName = d.child("Full Name").getValue().toString();
@@ -257,7 +300,8 @@ public class ResultActivity extends AppCompatActivity {
                                        bldGroup = d.child("Blood Group").getValue().toString();
                                        phnNo = d.getKey();
                                        gender = d.child("Gender").getValue().toString();
-                                       userInformation = new UserInformation(fName,address,dateOfBirth,bldGroup,phnNo,gender);
+                                       deviceToken = d.child("Token id").getValue().toString();
+                                       userInformation = new UserInformation(fName,address,dateOfBirth,bldGroup,phnNo,gender,deviceToken);
                                        userList.add(userInformation);
                                        listView.setAdapter(userListAdapters);
                                        c++;
@@ -269,7 +313,8 @@ public class ResultActivity extends AppCompatActivity {
                                        bldGroup = d.child("Blood Group").getValue().toString();
                                        phnNo = d.getKey();
                                        gender = d.child("Gender").getValue().toString();
-                                       userInformation = new UserInformation(fName,address,dateOfBirth,bldGroup,phnNo,gender);
+                                       deviceToken = d.child("Token id").getValue().toString();
+                                       userInformation = new UserInformation(fName,address,dateOfBirth,bldGroup,phnNo,gender,deviceToken);
                                        userList.add(userInformation);
                                        listView.setAdapter(userListAdapters);
                                        c++;
@@ -277,20 +322,35 @@ public class ResultActivity extends AppCompatActivity {
                                    else if ((splitString2(fullAddress) > 2 /*&& (checkState(stateList,deviceState) == true) &&//search like "Khilkhet,Dhaka,Bangladesh"
                                            (checkCity(cityList,deviceCity) == true)) || (splitString2(fullAddress) > 2 && (checkState(stateList,deviceState) == true) &&//search like "Khilkhet,Dhaka,Bangladesh"
                                            (checkCity(cityList,deviceCity) == true) && checkCity(roadList,deviceRoad))*/)){
-                                       if (distance(dbLatitude,dbLongitude,latitude,longitude) < 5000 ){//finding user around 5 miles
+                                       if (distance(dbLatitude,dbLongitude,latitude,longitude) <= 5000 && diffDays == 0 && diffHours == 0 && diffMinutes <=30){//finding user around 5 miles
                                            fName = d.child("Full Name").getValue().toString();
                                            address = d.child("Full address").getValue().toString();
                                            dateOfBirth = d.child("Date of birth").getValue().toString();
                                            bldGroup = d.child("Blood Group").getValue().toString();
                                            phnNo = d.getKey();
                                            gender = d.child("Gender").getValue().toString();
-                                           userInformation = new UserInformation(fName,address,dateOfBirth,bldGroup,phnNo,gender);
+                                           deviceToken = d.child("Token id").getValue().toString();
+                                           userInformation = new UserInformation(fName,address,dateOfBirth,bldGroup,phnNo,gender,deviceToken);
                                            userList.add(userInformation);
                                            listView.setAdapter(userListAdapters);
                                            c++;
                                        }
                                    }
                                }
+                           }
+                           else if (d.child("Location").getValue().equals("On") && d.child("Blood Group").getValue().equals(bloodGroup) && (splitString2(fullAddress) > 2 && distance(dbLatitude,dbLongitude,latitude,longitude) <= 5000
+                           && diffDays == 0 && diffHours == 0 && diffMinutes <=30)){
+                               fName = d.child("Full Name").getValue().toString();
+                               address = d.child("Full address").getValue().toString();
+                               dateOfBirth = d.child("Date of birth").getValue().toString();
+                               bldGroup = d.child("Blood Group").getValue().toString();
+                               phnNo = d.getKey();
+                               gender = d.child("Gender").getValue().toString();
+                               deviceToken = d.child("Token id").getValue().toString();
+                               userInformation = new UserInformation(fName,address,dateOfBirth,bldGroup,phnNo,gender,deviceToken);
+                               userList.add(userInformation);
+                               listView.setAdapter(userListAdapters);
+                               c++;
                            }
                         }
 
@@ -349,5 +409,37 @@ public class ResultActivity extends AppCompatActivity {
         endPoint.setLatitude(lat2);
         endPoint.setLongitude(lng2);
         return  startPoint.distanceTo(endPoint);
+    }
+
+    public ArrayList<Long> dateDifference(String userExitTime, String currentDateandTime){
+        ArrayList<Long> arrayList = new ArrayList<>();
+        SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+
+        Date d1 = null;
+        Date d2 = null;
+
+        try {
+            d1 = format.parse(userExitTime);
+            d2 = format.parse(currentDateandTime);
+
+            //in milliseconds
+            long diff = d2.getTime() - d1.getTime();
+
+            diffSeconds = diff / 1000 % 60;
+            diffMinutes = diff / (60 * 1000) % 60;
+            diffHours = diff / (60 * 60 * 1000) % 24;
+            diffDays = diff / (24 * 60 * 60 * 1000);
+
+            arrayList.add(diffSeconds);
+            arrayList.add(diffMinutes);
+            arrayList.add(diffHours);
+            arrayList.add(diffDays);
+
+            //Log.d("llllll", "" + diffDays + " " + diffHours + " " + diffMinutes + " " + diffSeconds + " exit time  " + userExitTime + "  current " + currentDateandTime + " " + d1 + " " + d2);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return arrayList;
     }
 }

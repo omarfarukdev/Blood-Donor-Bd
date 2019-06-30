@@ -152,6 +152,9 @@ public class MessagesActivity extends AppCompatActivity {
 
             }
         });
+        if(messageHistoryInfoArrayList.size() == 0){
+            pgsBar.setVisibility(View.GONE);
+        }
     }
    /* public void lastMessage(final String userPhNo, final String userName){
         Log.d("cccc", String.valueOf(userName));

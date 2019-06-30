@@ -87,6 +87,28 @@
                     >
 
                     <android.support.design.widget.TextInputEditText
+                        android:id="@+id/homeAddressSearchEt"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="15dp"
+                        android:layout_marginRight="15dp"
+                        android:hint="Current home address"
+                        android:clickable="false"
+                        android:focusable="false"/>
+                </android.support.design.widget.TextInputLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    >
+
+                    <android.support.design.widget.TextInputEditText
                         android:id="@+id/lastDonationDateEt"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"

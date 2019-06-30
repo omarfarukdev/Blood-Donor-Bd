@@ -16,7 +16,7 @@ import java.util.Date;
 public class ResultDetails extends AppCompatActivity {
     TextView nameTv,dateTv,genderTv,ageTv,phoneNo;
     String phnNo;
-    String name,birthdate;
+    String name,birthdate,reciverTokenId;
     int birtday,birthmonth,birthyear,currentday,currentmonth,currentyear,age;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +37,8 @@ public class ResultDetails extends AppCompatActivity {
         dateTv.setText("Member since march 2018");
         genderTv.setText(intent.getStringExtra("gender"));
         birthdate=intent.getStringExtra("dateOfBirth");
+        reciverTokenId = intent.getStringExtra("tokenId");
+
         String[] birthday=birthdate.split("/");
         birtday=Integer.parseInt(birthday[0]);
         birthmonth=Integer.parseInt(birthday[1]);
@@ -78,6 +80,7 @@ public class ResultDetails extends AppCompatActivity {
         Intent intent=new Intent(this,ChatActivity.class);
         intent.putExtra("name",name);
         intent.putExtra("phoneNo",phnNo);
+        intent.putExtra("tokenId",reciverTokenId);
         startActivity(intent);
     }
 }

@@ -168,22 +168,35 @@ public class LocationService extends Service implements LocationListener, Google
             String fullAddress = obj.getAddressLine(0);
 
             String[] sp = fullAddress.split(",");
-
-            for(int i=0;i<sp.length;i++){
-                addressList.add(sp[i]);
+            if(sp.length != 0){
+                for(int i=0;i<sp.length;i++){
+                    addressList.add(sp[i]);
+                }
+                try{
+                    databaseReference.child("Country").setValue(addressList.get(addressList.size()-1).trim());
+                }catch (Exception e){}
+                try{
+                    databaseReference.child("City").setValue(addressList.get(addressList.size()-2).trim());
+                }catch (Exception e){}
+                try{
+                    databaseReference.child("State").setValue(addressList.get(addressList.size()-3).trim());
+                }catch (Exception e){}
+                try{
+                    databaseReference.child("Full address").setValue(fullAddress);
+                }catch (Exception e){}
+                try{
+                    databaseReference.child("Latitude").setValue(location.getLatitude());
+                }catch (Exception e){}
+                try{
+                    databaseReference.child("Longitude").setValue(location.getLongitude());
+                }catch (Exception e){}
+                try{
+                    databaseReference.child("Road").setValue(addressList.get(addressList.size()-4));
+                }catch (Exception e){
+                    databaseReference.child("Road").setValue("Null");
+                }
             }
-            databaseReference.child("Country").setValue(addressList.get(addressList.size()-1).trim());
-            databaseReference.child("City").setValue(addressList.get(addressList.size()-2).trim());
-            databaseReference.child("State").setValue(addressList.get(addressList.size()-3).trim());
-            databaseReference.child("Full address").setValue(fullAddress);
-            databaseReference.child("Latitude").setValue(location.getLatitude());
-            databaseReference.child("Longitude").setValue(location.getLongitude());
 
-            try{
-                databaseReference.child("Road").setValue(addressList.get(addressList.size()-4));
-            }catch (Exception e){
-                databaseReference.child("Road").setValue("Null");
-            }
 
 
             //Toast.makeText(this,"Tvr "+addressList.get(addressList.size()-1), Toast.LENGTH_SHORT).show();

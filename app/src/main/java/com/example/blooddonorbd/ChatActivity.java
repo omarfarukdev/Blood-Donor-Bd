@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import com.example.blooddonorbd.Adapters.MessageListAdapters;
 import com.example.blooddonorbd.Models.MessageInfo;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -25,6 +26,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -38,7 +41,7 @@ public class ChatActivity extends AppCompatActivity {
     private ImageView sendBt;
     private  EditText editmessage;
     private ListView messagelist;
-    private String recivername,recivernumber,currentnumber;
+    private String recivername,recivernumber,currentnumber,reciverTokenId,currentUserToken;
     ArrayList <Integer> t;
     private MessageListAdapters arrayAdapter;
     private ArrayList<MessageInfo>  mesList;
@@ -68,6 +71,9 @@ public class ChatActivity extends AppCompatActivity {
         Intent intent=getIntent();
         recivername=intent.getStringExtra("name");
         recivernumber=intent.getStringExtra("phoneNo");
+        reciverTokenId = intent.getStringExtra("tokenId");
+
+        Toast.makeText(this, ""+recivernumber, Toast.LENGTH_SHORT).show();
 
         name.setText(recivername);
         phoneno.setText(recivernumber);
@@ -96,6 +102,14 @@ public class ChatActivity extends AppCompatActivity {
         }
         setup();
 
+        //current user token
+        FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
+            @Override
+            public void onSuccess(InstanceIdResult instanceIdResult) {
+                currentUserToken = instanceIdResult.getToken();
+            }
+        });
+
     }
     private void setup(){
         try{
@@ -114,7 +128,7 @@ public class ChatActivity extends AppCompatActivity {
                             DatabaseReference reference2=FirebaseDatabase.getInstance().getReference().child("Chat").child(databaseReference1.getKey()).push();
                             cc = 1;
                            // if (recivernumber.equals(FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber()))
-                            messageInfo = new MessageInfo(editmessage.getText().toString(),currentDateandTime,recivernumber,currentnumber,"false");
+                            messageInfo = new MessageInfo(editmessage.getText().toString(),currentDateandTime,recivernumber,reciverTokenId,currentnumber,currentUserToken,recivername,"false");
                             reference2.setValue(messageInfo);
                             editmessage.setText("");
                            setup();
@@ -161,7 +175,7 @@ public class ChatActivity extends AppCompatActivity {
                         SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd 'at' HH:mm:ss");
                         String currentDateandTime = sdf.format(new Date());
                         if(editmessage.getText().toString().length()!=0){
-                            messageInfo = new MessageInfo(editmessage.getText().toString(),currentDateandTime,recivernumber,currentnumber,"false");
+                            messageInfo = new MessageInfo(editmessage.getText().toString(),currentDateandTime,recivernumber,reciverTokenId,currentnumber,currentUserToken,recivername,"false");
                             reference.setValue(messageInfo);
                             editmessage.setText("");
                         }
@@ -287,7 +301,7 @@ public class ChatActivity extends AppCompatActivity {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd 'at' HH:mm:ss");
             String currentDateandTime = sdf.format(new Date());
 
-            messageInfo = new MessageInfo(editmessage.getText().toString(),currentDateandTime,recivernumber,currentnumber,"false");
+            messageInfo = new MessageInfo(editmessage.getText().toString(),currentDateandTime,recivernumber,reciverTokenId,currentnumber,currentUserToken,recivername,"false");
             reference2.setValue(messageInfo);
 
             editmessage.setText("");
@@ -303,7 +317,7 @@ private void conversation(DatabaseReference databaseReference){
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 for (DataSnapshot d : dataSnapshot.getChildren()) {
-                    String msg = null, time = null, sender = null, reciver = null;
+                    String msg = null, time = null, sender = null, reciver = null,reciverTokenId = null,currentUserToken = null;
 
                     if (!dataSnapshot.getKey().equals("PhoneNo1") && !dataSnapshot.getKey().equals("PhoneNo2")) {
                         if (d.getKey().equals("message")) {
@@ -330,6 +344,19 @@ private void conversation(DatabaseReference databaseReference){
                                 conversationList.add(sender);
                             }
                         }
+                        /*if (d.getKey().equals("reciverTokenId")) {
+                            reciverTokenId = d.getValue().toString();
+                            if (reciverTokenId != null) {
+                                conversationList.add(reciverTokenId);
+                            }
+                        }
+                        if (d.getKey().equals("currentUserToken")) {
+                            currentUserToken = d.getValue().toString();
+                            if (currentUserToken != null) {
+                                conversationList.add(currentUserToken);
+                            }
+                        }*/
+
                     }
                    // Log.d("msg", msg);
                     //Log.d("msg2", time);
@@ -342,12 +369,14 @@ private void conversation(DatabaseReference databaseReference){
                         messageInfo = new MessageInfo(conversationList.get(0), conversationList.get(1), conversationList.get(2), conversationList.get(3),"false");
                         mesList.add(messageInfo);
                         messagelist.setAdapter(arrayAdapter);
+                        // Log.d("ssssss",""+conversationList.get(1)+""+conversationList.get(3));
                         arrayAdapter.notifyDataSetChanged();
                         Log.d("conversa","1");
                         conversationList.clear();
                     }
 
                 }
+
             }
 
             @Override
@@ -372,8 +401,8 @@ private void conversation(DatabaseReference databaseReference){
         });
 }
     public void backBt(View view) {
-        finish();
-        //System.exit(0);
+        //finish();
+        System.exit(0);
     }
 
     @Override
@@ -385,7 +414,7 @@ private void conversation(DatabaseReference databaseReference){
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        finish();
-        //System.exit(0);
+        //finish();
+        System.exit(0);
     }
 }

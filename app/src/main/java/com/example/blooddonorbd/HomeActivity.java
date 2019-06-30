@@ -2,6 +2,7 @@ package com.example.blooddonorbd;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -19,7 +20,6 @@ import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -46,7 +46,13 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -59,12 +65,15 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
     private long UPDATE_INTERVAL = 2 * 1000;  /* 10 secs */
     private long FASTEST_INTERVAL = 2000; /* 2 sec */
     private FusedLocationProviderClient client;
-    Spinner bloodGroupSpinner;
-    TextView currentLocationTv, donotNumberTv;
-    String fullAddress, city, country, state,road,bloodGroup,spinnerSelectedItem;
+    private Spinner bloodGroupSpinner;
+    private TextView currentLocationTv, donotNumberTv;
+    private String fullAddress, city, country, state,road,bloodGroup,spinnerSelectedItem;
     private FusedLocationProviderClient fusedLocationClient;
-    ImageView userimage;
-    double latitude,longitude;
+    private ImageView userimage;
+    private double latitude,longitude;
+    private DatabaseReference databaseReferenceExit;
+    private long diffSeconds,diffMinutes,diffHours,diffDays;
+    private long diffSecondOnLastDonation,diffMinutesOnLastDonation,diffHoursOnLastDonation,diffDaysOnLastDonation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -224,31 +233,73 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
                                         //Toast.makeText(HomeActivity.this, ""+dataSnapshot.child(FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber()).getKey(), Toast.LENGTH_SHORT).show();
                                         for (DataSnapshot d:dataSnapshot.getChildren()){
                                             try {
+                                                double dbLatitude = 0,dbLongitude=0,homeAddressLat=0,homeAddressLong=0;
+                                                String lastDonationDate = null;
                                                 String statee = d.child("State").getValue().toString();
                                                 String city = d.child("City").getValue().toString();
                                                 String bloodGrp = d.child("Blood Group").getValue().toString();
+                                                String userExitTime;
+                                                try {
+                                                    dbLatitude = Double.parseDouble(d.child("Latitude").getValue().toString());
+                                                }catch (Exception e){}
+                                                try {
+                                                    dbLongitude = Double.parseDouble(d.child("Longitude").getValue().toString());
+                                                }catch (Exception e){}
+                                                try {
+                                                    homeAddressLat = Double.parseDouble(d.child("Current home latitude").getValue().toString());
+                                                }catch (Exception e){}
 
-                                                double dbLatitude = Double.parseDouble(d.child("Latitude").getValue().toString());
-                                                double dbLongitude = Double.parseDouble(d.child("Longitude").getValue().toString());
-                                                Log.d("llllll",dbLatitude+" "+dbLongitude+" "+distance(latitude,longitude,dbLatitude,dbLongitude));
+                                                try {
+                                                    homeAddressLong = Double.parseDouble(d.child("Current home longitude").getValue().toString());
+                                                }catch (Exception e){}
+                                                try {
+                                                    lastDonationDate = d.child("Last donation date").getValue().toString();
+                                                }catch (Exception e){}
 
-                                                String[] stateList = statee.split(" ");
+
+
+                                              /*  String[] stateList = statee.split(" ");
                                                 String[] cityList = city.split(" ");
 
                                                 String[] deviceState = state.split(" ");
-                                                String[] deviceCity = city.split(" ");
+                                                String[] deviceCity = city.split(" ");*/
 
-                                                    if (!d.getKey().equals(FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber()) &&(d.child("Location").getValue().equals("On")) && spinnerSelectedItem.equals(bloodGrp)  && distance(latitude,longitude,dbLatitude,dbLongitude)<=5000/*(d.child("Full address").getValue().equals(fullAddress))*/){
-                                                        //Toast.makeText(HomeActivity.this, ""+d.child("Full Name").getValue(), Toast.LENGTH_SHORT).show();
+                                                if(!d.getKey().equals(FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber())) {
+                                                    userExitTime = d.child("Exit time").getValue().toString();
 
+                                                    Calendar cal = Calendar.getInstance();
+                                                    DateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+                                                    String currentDateandTime = sdf.format(cal.getTime());
+
+                                                    // Toast.makeText(HomeActivity.this, ""+diffDays+" "+diffHours+" "+diffMinutes+" "+diffSeconds+" exit time  "+userExitTime, Toast.LENGTH_SHORT).show();
+                                                    ArrayList<Long> exitTimeDifList;
+                                                    try{
+                                                         exitTimeDifList = dateDifference(userExitTime,currentDateandTime);
+                                                         diffDays = exitTimeDifList.get(3);
+                                                         diffHours = exitTimeDifList.get(2);
+                                                         diffMinutes = exitTimeDifList.get(1);
+                                                    }catch (Exception e){}
+
+                                                    if ((d.child("Location").getValue().equals("On")) &&
+                                                            (distance(latitude, longitude, dbLatitude, dbLongitude) <= 5000 || distance(latitude, longitude, homeAddressLat, homeAddressLong) <= 5000) &&
+                                                            diffMinutes <= 30 && diffHours == 0 && diffDays == 0 ){
+
+                                                        ArrayList<Long> lastDonationDateList;
+                                                        try{
+                                                            lastDonationDateList = dateDifference(lastDonationDate,currentDateandTime);
+                                                            diffDaysOnLastDonation = lastDonationDateList.get(3);
+                                                            diffHoursOnLastDonation = lastDonationDateList.get(2);
+                                                            diffMinutesOnLastDonation = lastDonationDateList.get(1);
+                                                        }catch (Exception e){}
+
+                                                        if(diffDaysOnLastDonation <= 120){//checking here,user last donation date was 120 days before or not
+                                                            c++;
+                                                        }
+
+                                                    } else if ((d.child("Location").getValue().equals("Off")) && diffMinutes <= 30 && diffHours == 0 && diffDays == 0) {
                                                         c++;
-                                                    }/*else if(!d.getKey().equals(FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber())&& (d.child("Location").getValue().equals("On"))&&
-                                                            distance(latitude,longitude,dbLatitude,dbLongitude)<0.6){
-
-                                                        c++;
-                                                    }*/
-                                                    //else if(!d.getKey().equals(FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber()))
-                                               // }
+                                                    }
+                                                }
 
                                             }catch (Exception e){
                                                 Toast.makeText(HomeActivity.this, ""+e, Toast.LENGTH_SHORT).show();
@@ -272,6 +323,37 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
                         }
                     }
                 });
+    }
+    public ArrayList<Long> dateDifference(String userExitTime, String currentDateandTime){
+        ArrayList<Long> arrayList = new ArrayList<>();
+        SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+
+        Date d1 = null;
+        Date d2 = null;
+
+        try {
+            d1 = format.parse(userExitTime);
+            d2 = format.parse(currentDateandTime);
+
+            //in milliseconds
+            long diff = d2.getTime() - d1.getTime();
+
+            diffSeconds = diff / 1000 % 60;
+            diffMinutes = diff / (60 * 1000) % 60;
+            diffHours = diff / (60 * 60 * 1000) % 24;
+            diffDays = diff / (24 * 60 * 60 * 1000);
+
+            arrayList.add(diffSeconds);
+            arrayList.add(diffMinutes);
+            arrayList.add(diffHours);
+            arrayList.add(diffDays);
+
+            //Log.d("llllll", "" + diffDays + " " + diffHours + " " + diffMinutes + " " + diffSeconds + " exit time  " + userExitTime + "  current " + currentDateandTime + " " + d1 + " " + d2);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return arrayList;
     }
 
     private boolean isLocationEnabled() {
@@ -321,23 +403,6 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
 
     private double distance(double lat1, double lng1, double lat2, double lng2) {
 
-       /* double earthRadius = 3958.75; // in miles, change to 6371 for kilometer output
-
-        double dLat = Math.toRadians(lat2-lat1);
-        double dLng = Math.toRadians(lng2-lng1);
-
-        double sindLat = Math.sin(dLat / 2);
-        double sindLng = Math.sin(dLng / 2);
-
-        double a = Math.pow(sindLat, 2) + Math.pow(sindLng, 2)
-                * Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2));
-
-        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-
-        double dist = earthRadius * c;
-
-        return dist; // output distance, in MILES*/
-
         Location startPoint=new Location("locationA");
         startPoint.setLatitude(lat1);
         startPoint.setLongitude(lng1);
@@ -347,5 +412,37 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
         endPoint.setLongitude(lng2);
 
         return startPoint.distanceTo(endPoint);
+    }
+
+    @Override
+    public void onBackPressed() {
+        //super.onBackPressed();
+        try{
+            databaseReferenceExit = FirebaseDatabase.getInstance().getReference().child("User").child(FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber());
+        }catch (Exception e){}
+
+        android.app.AlertDialog.Builder dialog = new AlertDialog.Builder(HomeActivity.this);
+        dialog.setTitle("Do you want to Exit ?");
+        dialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+              /*  Intent intent = new Intent(ProfileActivity.this,SplashActivity.class);
+                intent.addCategory(Intent.CATEGORY_HOME);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);*/
+                Calendar cal = Calendar.getInstance();
+                DateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+                String currentDateandTime = sdf.format(cal.getTime());
+                databaseReferenceExit.child("Exit time").setValue(currentDateandTime);
+                finish();
+            }
+        });
+        dialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        dialog.show();
     }
 }
