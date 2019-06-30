@@ -58,7 +58,7 @@ public class MessageHistoryAdapters extends RecyclerView.Adapter<MessageHistoryA
     public void onBindViewHolder(@NonNull MessageHistoryAdapters.ViewHolder viewHolder, int i) {
         //viewHolder.name.setText(arrayList.get(i).getName()+" "+arrayList.size());
         final MessageHistoryInfo messageHistoryInfo = arrayList.get(i);
-        lastMessage(messageHistoryInfo.getPhoneNum(),viewHolder.message,viewHolder.name,messageHistoryInfo.getName(),i);
+        lastMessage(messageHistoryInfo.getPhoneNum(),viewHolder.message,viewHolder.name,viewHolder.time,messageHistoryInfo.getName(),i);
         viewHolder.constraintLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -79,17 +79,19 @@ public class MessageHistoryAdapters extends RecyclerView.Adapter<MessageHistoryA
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public TextView name;
         public TextView message;
+        public TextView time;
         public ConstraintLayout constraintLayout;
         public ViewHolder(View itemView) {
             super(itemView);
             this.name = (TextView) itemView.findViewById(R.id.username);
             this.message = itemView.findViewById(R.id.messageTv);
+            this.time = itemView.findViewById(R.id.timeanddate);
             constraintLayout = (ConstraintLayout) itemView.findViewById(R.id.constraintLayout);
         }
 
 }
 
-    public void lastMessage(final String phnNo, final TextView addName, final TextView name, final String nameValue, final int position) {
+    public void lastMessage(final String phnNo, final TextView addName, final TextView name, final TextView time, final String nameValue, final int position) {
         try {
             final DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("Chat");
             databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -99,7 +101,7 @@ public class MessageHistoryAdapters extends RecyclerView.Adapter<MessageHistoryA
                     for (DataSnapshot d : dataSnapshot.getChildren()) {
                         //Log.d("chiled",String.valueOf(dataSnapshot.getChildrenCount()));
                         DatabaseReference databaseReference2 = FirebaseDatabase.getInstance().getReference().child("Chat").child(d.getKey());
-                        checkingRef(databaseReference2, d, phnNo,addName,name,nameValue,position);
+                        checkingRef(databaseReference2, d, phnNo,addName,name,time,nameValue,position);
                     }
                 }
 
@@ -114,7 +116,7 @@ public class MessageHistoryAdapters extends RecyclerView.Adapter<MessageHistoryA
         }
     }
 
-    private void checkingRef(DatabaseReference databaseReference2, final DataSnapshot d, final String phnNo, final TextView addName, final TextView name, final String nameValue, final int position) {
+    private void checkingRef(DatabaseReference databaseReference2, final DataSnapshot d, final String phnNo, final TextView addName, final TextView name, final TextView time, final String nameValue, final int position) {
         databaseReference2.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -123,7 +125,7 @@ public class MessageHistoryAdapters extends RecyclerView.Adapter<MessageHistoryA
                             || (dataSnapshot.child("PhoneNo2").getValue().equals(FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber()) && dataSnapshot.child("PhoneNo1").getValue().equals(phnNo) )) {
                         //c++;
                         //if (c == 1) {
-                            readMessage(d.getKey(),addName,name,nameValue,position);
+                            readMessage(d.getKey(),addName,name,time,nameValue,position);
                         //}
                     }
 
@@ -139,7 +141,7 @@ public class MessageHistoryAdapters extends RecyclerView.Adapter<MessageHistoryA
         });
     }
 
-    public void readMessage(final String chatKey, final TextView addName, final TextView name, final String nameValue, final int position) {
+    public void readMessage(final String chatKey, final TextView addName, final TextView name, final TextView time, final String nameValue, final int position) {
 
         final int temp = c;
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("Chat").child(chatKey);
@@ -153,6 +155,7 @@ public class MessageHistoryAdapters extends RecyclerView.Adapter<MessageHistoryA
                            lastMessage  = messageInfo.getMessage();
                            recever = messageInfo.getReciver();
                            isSeen = messageInfo.getIsSeen();
+                           messageTime = messageInfo.getMessageTime();
                        }
                    }catch (Exception e){}
                 }
@@ -160,14 +163,18 @@ public class MessageHistoryAdapters extends RecyclerView.Adapter<MessageHistoryA
                 try{
                     if (recever.equals(FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber()) && isSeen.equals("false")){
                         name.setText(nameValue);
+                        time.setText(messageTime);
                         addName.setText(lastMessage);
                         name.setTextColor(Color.BLACK);
                         addName.setTextColor(Color.BLACK);
+                        time.setTextColor(Color.BLACK);
                     }else {
                         name.setText(nameValue);
                         addName.setText(lastMessage);
+                        time.setText(messageTime);
                         name.setTextColor(Color.GRAY);
                         addName.setTextColor(Color.GRAY);
+                        time.setTextColor(Color.GRAY);
                     }
                 }catch (Exception e){}
 
