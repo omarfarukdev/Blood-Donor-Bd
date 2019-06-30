@@ -6,10 +6,12 @@ import android.location.LocationManager;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -17,9 +19,11 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 
 public class SplashActivity extends AppCompatActivity {
-
+    DatabaseReference databaseReference;
     LinearLayout linearLayout;
     //disabling backpress
     @Override
@@ -54,29 +58,38 @@ public class SplashActivity extends AppCompatActivity {
                 }
 
                 if(firebaseUser!=null){
-                    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("User").child(auth.getCurrentUser().getPhoneNumber());//current user references
+                   databaseReference = FirebaseDatabase.getInstance().getReference().child("User").child(auth.getCurrentUser().getPhoneNumber());//current user references
                    // FirebaseDatabase.getInstance().setPersistenceEnabled(true);//offline capabilities
                     //databaseReference.keepSynced(true);
                     databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             int count = (int) dataSnapshot.getChildrenCount();
+                            Log.d("iiii", String.valueOf(dataSnapshot.hasChild("Full Name")));
                             //Toast.makeText(SplashActivity.this, ""+dataSnapshot.getChildrenCount(), Toast.LENGTH_SHORT).show();
-                            if (count>=7 && !isLocationEnabled() && linearLayout.getVisibility() == View.VISIBLE){
+                            if (count>=8 && !isLocationEnabled() && linearLayout.getVisibility() == View.VISIBLE){
                                 Intent intent = new Intent(SplashActivity.this,DiscoverableActivity.class);
                                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                 finish();
                                 startActivity(intent);
                                 // onDestroy();
-                            }else if (count>=7 && isLocationEnabled() && linearLayout.getVisibility() == View.VISIBLE){
+                            }else if (count>=8 && isLocationEnabled() && linearLayout.getVisibility() == View.VISIBLE && dataSnapshot.hasChild("Full Name") && dataSnapshot.hasChild("Blood Group")){
                                 Toast.makeText(SplashActivity.this, ""+count, Toast.LENGTH_SHORT).show();
                                 Intent intent = new Intent(SplashActivity.this,HomeActivity.class);
                                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
+                                    @Override
+                                    public void onSuccess(InstanceIdResult instanceIdResult) {
+                                        databaseReference.child("Token id").setValue(instanceIdResult.getToken());
+                                        //Toast.makeText(SplashActivity.this, "  "+instanceIdResult.getToken(), Toast.LENGTH_SHORT).show();
+
+                                    }
+                                });
                                 finish();
                                 startActivity(intent);
                                 //onDestroy();
                             }
-                            else if(count<=6 && linearLayout.getVisibility() == View.VISIBLE){
+                            else if(linearLayout.getVisibility() == View.VISIBLE && !dataSnapshot.hasChild("Full Name") && !dataSnapshot.hasChild("Blood Group")){
                                 Intent intent = new Intent(SplashActivity.this, SetupProfileActivity.class);
                                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                 finish();

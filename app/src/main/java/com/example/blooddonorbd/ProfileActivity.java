@@ -1,5 +1,8 @@
 package com.example.blooddonorbd;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -14,12 +17,20 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
+
+import java.sql.Date;
+import java.sql.Time;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 public class ProfileActivity extends AppCompatActivity {
     TextView username,usernumber;
     CardView message,setting,logout,notification,help;
     String currentnumber,name,city;
+    DatabaseReference databaseReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +56,7 @@ public class ProfileActivity extends AppCompatActivity {
             usernumber.setText(currentnumber);
 
 
-            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("User").child(currentnumber);
+            databaseReference = FirebaseDatabase.getInstance().getReference().child("User").child(currentnumber);
             databaseReference.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -90,8 +101,33 @@ public class ProfileActivity extends AppCompatActivity {
         logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FirebaseAuth.getInstance().signOut();
-                finish();
+                AlertDialog.Builder dialog = new AlertDialog.Builder(ProfileActivity.this);
+                dialog.setTitle("Do you want to Logout ?");
+                dialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent = new Intent(ProfileActivity.this,SplashActivity.class);
+                        intent.addCategory(Intent.CATEGORY_HOME);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        Calendar cal = Calendar.getInstance();
+                        DateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+                        String currentDateandTime = sdf.format(cal.getTime());
+                        FirebaseAuth.getInstance().signOut();
+                        databaseReference.child("Token id").setValue("");
+                        databaseReference.child("Exit time").setValue(currentDateandTime);
+                        databaseReference.child("Location").setValue("Off");
+                        finish();
+                        startActivity(intent);
+                    }
+                });
+                dialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+                dialog.show();
             }
         });
         help.setOnClickListener(new View.OnClickListener() {
