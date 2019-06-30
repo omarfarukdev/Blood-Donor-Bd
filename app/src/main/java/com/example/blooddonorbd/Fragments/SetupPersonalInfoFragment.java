@@ -3,6 +3,7 @@ package com.example.blooddonorbd.Fragments;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.icu.util.Calendar;
 import android.location.LocationManager;
 import android.os.Build;
@@ -20,22 +21,47 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Toast;
 
+import com.example.blooddonorbd.DiscoverableActivity;
+import com.example.blooddonorbd.HomeActivity;
 import com.example.blooddonorbd.Models.UserInformation;
 import com.example.blooddonorbd.R;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.android.libraries.places.widget.Autocomplete;
+import com.google.android.libraries.places.widget.AutocompleteActivity;
+import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.List;
+
+import static android.app.Activity.RESULT_CANCELED;
+import static android.app.Activity.RESULT_OK;
 
 
 public class SetupPersonalInfoFragment extends Fragment {
-    EditText fullName,dateOfBirth,lastDonationDate;
+    EditText fullName,dateOfBirth,lastDonationDate,currentHomeAddressEt;
     Spinner bloodGroup,gender;
     String fName,bGroup,dBirth,g;
     UserInformation userInformation;
     private GoogleApiClient mGoogleApiClient;
     private LocationManager mLocationManager;
     PlaceAutocompleteFragment placeAutocompleteFragment;
+    String currentLocation;
+    double latitude;
+    double logitude;
     Button nextBt;
+    int REQUEST_CODE = 10;
     int AUTOCOMPLETE_REQUEST_CODE =1;
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
@@ -46,6 +72,8 @@ public class SetupPersonalInfoFragment extends Fragment {
         //all views initializing here
         fullName = view.findViewById(R.id.fullNameEt);
         dateOfBirth = view.findViewById(R.id.dateOfBirthEt);
+        currentHomeAddressEt = view.findViewById(R.id.homeAddressSearchEt);
+
         bloodGroup = view.findViewById(R.id.bloodGroupSp);
         //currentAdd = findViewById(R.id.currentAddEt);
         lastDonationDate = view.findViewById(R.id.lastDonationDateEt);
@@ -61,6 +89,21 @@ public class SetupPersonalInfoFragment extends Fragment {
 
         ArrayAdapter<String> genderAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item,getResources().getStringArray(R.array.gender));
         gender.setAdapter(genderAdapter);
+
+
+        // Initialize Places.
+        Places.initialize(getActivity().getApplicationContext(), "AIzaSyDPci6XtzK5LMbXvILYVQNj8CPI7qUArdg");
+
+        // Create a new Places client instance.
+        PlacesClient placesClient = Places.createClient(getActivity());
+
+        /**
+         * Initialize Places. For simplicity, the API key is hard-coded. In a production
+         * environment we recommend using a secure mechanism to manage API keys.
+         */
+        if (!Places.isInitialized()) {
+            Places.initialize(getActivity().getApplicationContext(), "AIzaSyDPci6XtzK5LMbXvILYVQNj8CPI7qUArdg");
+        }
         //final Calendar calendar1 = Calendar.getInstance();
         final java.util.Calendar calendar1 = java.util.Calendar.getInstance();
         lastDonationDate.setOnClickListener(new View.OnClickListener() {
@@ -72,7 +115,10 @@ public class SetupPersonalInfoFragment extends Fragment {
                         calendar1.set(Calendar.YEAR, year);
                         calendar1.set(Calendar.MONTH, month);
                         calendar1.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-                        lastDonationDate.setText(dayOfMonth+"/"+(month+1)+"/"+year);
+                        DateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+                        String currentTime = sdf.format(calendar1.getTime());
+
+                        lastDonationDate.setText((month+1)+"/"+dayOfMonth+"/"+year+" "+currentTime);
                     }
                 };
                 new DatePickerDialog(getActivity(), date, calendar1.get(Calendar.YEAR), calendar1.get(Calendar.MONTH), calendar1.get(Calendar.DAY_OF_MONTH)).show();
@@ -107,6 +153,18 @@ public class SetupPersonalInfoFragment extends Fragment {
                 setupprofileBt(v);
             }
         });
+
+        currentHomeAddressEt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                List<Place.Field> fields = Arrays.asList(Place.Field.ADDRESS, Place.Field.LAT_LNG);
+                // Start the autocomplete intent.
+                Intent intent = new Autocomplete.IntentBuilder(
+                        AutocompleteActivityMode.FULLSCREEN, fields)
+                        .build(getActivity());
+                startActivityForResult(intent, REQUEST_CODE);
+                }
+        });
         return view;
     }
 
@@ -120,7 +178,10 @@ public class SetupPersonalInfoFragment extends Fragment {
         if(dateOfBt == 0){
             dateOfBirth.setError("Enter your date of birth.");
         }
-        else if(fName!=0 && dateOfBt!=0){
+        if (currentHomeAddressEt.getText().length() == 0){
+            dateOfBirth.setError("Enter your current home address.");
+        }
+        else if(fName!=0 && dateOfBt!=0 && currentHomeAddressEt.getText().length() != 0){
             final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             builder.setMessage("Your blood group is "+bloodGroup.getSelectedItem().toString()+" . Are you sure with that ?");
             builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
@@ -137,7 +198,7 @@ public class SetupPersonalInfoFragment extends Fragment {
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     getActivity().finish();
                     startActivity(intent);*/
-                    fragment[0] = new SetupHomeAddressFragment();
+                    /*fragment[0] = new SetupHomeAddressFragment();
                     FragmentManager fragmentManager = getFragmentManager();
                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
@@ -153,7 +214,53 @@ public class SetupPersonalInfoFragment extends Fragment {
                     fragmentTransaction.remove(fragment1);
                     fragmentTransaction.commit();
                     fragment[0].setArguments(bundle); //data being send to SecondFragment
-                    fragmentTransaction.replace(R.id.fragment,fragment[0]);
+                    fragmentTransaction.replace(R.id.fragment,fragment[0]);*/
+
+
+                    String country = null,city = null,state = null,road = null;
+                    try{
+                        String[] address = currentLocation.split(",");
+                        int addLength = address.length;
+                        if (addLength == 3){
+                            try{
+                                country = address[addLength-1];
+                            }catch (Exception e){}
+                            try{
+                                city = address[addLength-2];
+                            }catch (Exception e){}
+                            try{
+                                state = address[addLength-3];
+                            }catch (Exception e){}
+                        }
+                        //road = address[addLength-4];
+                    }catch (NullPointerException n){};
+
+                    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("User").child(FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber());//current user database reference
+                    databaseReference.child("Current home country").setValue(country);
+                    databaseReference.child("Current home city").setValue(city);
+                    databaseReference.child("Current home state").setValue(state);
+                    databaseReference.child("Current home latitude").setValue(latitude);
+                    databaseReference.child("Current home longitude").setValue(logitude);
+
+                    databaseReference.child("Full Name").setValue(fullName.getText().toString());
+                    databaseReference.child("Blood Group").setValue(bloodGroup.getSelectedItem().toString());
+                    databaseReference.child("Date of birth").setValue(dateOfBirth.getText().toString());
+                    databaseReference.child("Gender").setValue(gender.getSelectedItem().toString());
+                    databaseReference.child("Last donation date").setValue(lastDonationDate.getText().toString());
+                    //databaseReference.child("Current home road").setValue(road);
+                    //databaseReference.child("Full Name").setValue(fullName.getText().toString());
+                    if (isLocationEnabled()){
+                        Intent intent = new Intent(getActivity(), HomeActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        getActivity().finish();
+                        startActivity(intent);
+                    }else{
+                        Intent intent = new Intent(getActivity(), DiscoverableActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        getActivity().finish();
+                        startActivity(intent);
+                    }
                 }
             });
             builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -168,5 +275,34 @@ public class SetupPersonalInfoFragment extends Fragment {
         }
     }
 
+    private boolean isLocationEnabled() {
+        LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
+                locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                Place place = Autocomplete.getPlaceFromIntent(data);
+                //Log.d("pl", "Place: " + place.getName() + ", " + place.getId());
+                //Toast.makeText(getActivity(), ""+place.getAddress(), Toast.LENGTH_SHORT).show();
+
+                currentLocation = place.getAddress();
+                latitude = place.getLatLng().latitude;
+                logitude = place.getLatLng().longitude;
+
+                currentHomeAddressEt.setText(place.getAddress());
+
+            } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
+                // TODO: Handle the error.
+                Status status = Autocomplete.getStatusFromIntent(data);
+                //Log.i(TAG, status.getStatusMessage());
+            } else if (resultCode == RESULT_CANCELED) {
+                // The user canceled the operation.
+            }
+        }
+    }
 
 }
