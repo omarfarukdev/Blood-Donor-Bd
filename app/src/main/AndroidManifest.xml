@@ -24,7 +24,12 @@
         <activity android:name=".HelpActivity" />
         <activity android:name=".NotificationActivity" />
         <activity android:name=".SettingActivity" />
-        <activity android:name=".ChatActivity" />
+        <activity android:name=".ChatActivity">
+            <intent-filter>
+                <action android:name="chatNotification"></action>
+                <category android:name="android.intent.category.DEFAULT"></category>
+            </intent-filter>
+        </activity>
         <activity android:name=".MessagesActivity" />
         <activity android:name=".ResultActivity" />
         <activity android:name=".ResultDetails" />
@@ -53,6 +58,17 @@
             android:value="@integer/google_play_services_version" />
 
         <service android:name=".Service.LocationService" />
+        <service
+            android:name=".Models.FirebaseMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="Tvr01" />AndroidManifest.xml
     </application>
 
 </manifest>
