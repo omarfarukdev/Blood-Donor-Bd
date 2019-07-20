@@ -22,6 +22,7 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
         String click_action = remoteMessage.getNotification().getClickAction();
         String receiverPhnNo = remoteMessage.getData().get("phoneNo");
         String name = remoteMessage.getData().get("name");
+        //String tokenId = remoteMessage.getData().get("tokenId");
 
         Uri soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
@@ -35,6 +36,7 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
         Intent intent = new Intent(click_action);
         intent.putExtra("phoneNo",receiverPhnNo);
         intent.putExtra("name",name);
+        //intent.putExtra("tokenId",tokenId);
 
         PendingIntent pendingIntent = PendingIntent.getActivity(this,0,intent,PendingIntent.FLAG_CANCEL_CURRENT);
 
