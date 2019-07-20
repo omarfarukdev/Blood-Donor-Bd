@@ -33,7 +33,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
@@ -189,6 +192,12 @@ public class LocationService extends Service implements LocationListener, Google
                 }catch (Exception e){}
                 try{
                     databaseReference.child("Longitude").setValue(location.getLongitude());
+                }catch (Exception e){}
+                try{
+                    Calendar cal = Calendar.getInstance();
+                    DateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+                    String currentDateandTime = sdf.format(cal.getTime());
+                    databaseReference.child("Active time").setValue(currentDateandTime);
                 }catch (Exception e){}
                 try{
                     databaseReference.child("Road").setValue(addressList.get(addressList.size()-4));
