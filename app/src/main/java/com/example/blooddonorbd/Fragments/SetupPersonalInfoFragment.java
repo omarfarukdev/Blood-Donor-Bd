@@ -42,7 +42,10 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import static android.app.Activity.RESULT_CANCELED;
@@ -169,6 +172,11 @@ public class SetupPersonalInfoFragment extends Fragment {
     }
 
     public void setupprofileBt(View view) {
+
+        Date date = new Date();
+        SimpleDateFormat df = new SimpleDateFormat("dd/MMMM/yyyy");
+        final String currentDate = df.format(date);
+
         final Fragment[] fragment = new Fragment[1];
         int fName = fullName.getText().toString().length();
         int dateOfBt = dateOfBirth.getText().toString().length();
@@ -241,6 +249,8 @@ public class SetupPersonalInfoFragment extends Fragment {
                     databaseReference.child("Current home state").setValue(state);
                     databaseReference.child("Current home latitude").setValue(latitude);
                     databaseReference.child("Current home longitude").setValue(logitude);
+                    databaseReference.child("Current Location").setValue(currentLocation);
+                    databaseReference.child("Sign up date").setValue(currentDate);
 
                     databaseReference.child("Full Name").setValue(fullName.getText().toString());
                     databaseReference.child("Blood Group").setValue(bloodGroup.getSelectedItem().toString());

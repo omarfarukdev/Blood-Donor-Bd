@@ -5,22 +5,17 @@ import android.location.Location;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.blooddonorbd.Adapters.UserListAdapters;
 import com.example.blooddonorbd.Models.UserInformation;
 import com.google.android.gms.common.api.Status;
-import com.google.android.gms.location.places.AutocompleteFilter;
-import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
-import com.google.android.libraries.places.api.model.TypeFilter;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.libraries.places.widget.Autocomplete;
 import com.google.android.libraries.places.widget.AutocompleteActivity;
@@ -53,6 +48,9 @@ public class ResultActivity extends AppCompatActivity {
     double searchLatitude,searchLongitude;
     double deviceLatitude,deviceLongitude;
     private long diffSeconds,diffMinutes,diffHours,diffDays;
+    private long diffDaysOnLastDonation = 0,diffHoursOnLastDonation,diffMinutesOnLastDonation;
+    public String deviceToken;
+    private ImageView activeImage;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,6 +60,7 @@ public class ResultActivity extends AppCompatActivity {
         bloodGrpTv = findViewById(R.id.bloodgrpTv);
         noOfDonorTv = findViewById(R.id.noOfDonotTv);
         searchIm = findViewById(R.id.searchImg);
+        //listviewEmptyTv = findViewById(R.id.listviewEmptyMsgTv);
 
         Intent intent = getIntent();
         fullAddress = intent.getStringExtra("fullAddress");
@@ -106,7 +105,6 @@ public class ResultActivity extends AppCompatActivity {
             }
         });
 
-        //Log.d("lennn",fullAddress);
 
         search(fullAddress,state,city,road,deviceLatitude,deviceLongitude);
 
@@ -119,11 +117,13 @@ public class ResultActivity extends AppCompatActivity {
                 intent.putExtra("gender",userList.get(position).getGender());
                 intent.putExtra("phoneNo",userList.get(position).getPhnNo());
                 intent.putExtra("tokenId",userList.get(position).getToken());
-                intent.putExtra("name",fName);
+                intent.putExtra("joiningDate",userList.get(position).getJoiningDate());
+                //intent.putExtra("name",fName);
 
                 startActivity(intent);
             }
         });
+        //listView.setEmptyView(listviewEmptyTv);
         
     }
     //checking two array have minimum one word same
@@ -174,8 +174,6 @@ public class ResultActivity extends AppCompatActivity {
         if (requestCode == REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 Place place = Autocomplete.getPlaceFromIntent(data);
-                //Log.d("pl", "Place: " + place.getName() + ", " + place.getId());
-                //Toast.makeText(getActivity(), ""+place.getAddress(), Toast.LENGTH_SHORT).show();
 
                 searchLocation = place.getAddress();
                 String s[] = splitString(searchLocation);
@@ -186,7 +184,6 @@ public class ResultActivity extends AppCompatActivity {
                    // else if (s.length.)
                 //}
                 //Toast.makeText(this, ""+place.getLatLng(), Toast.LENGTH_LONG).show();
-                Log.d("latLog",""+place.getLatLng().latitude);
                 fullAddress = place.getAddress();
                 searchPlaceNamee = place.getName();
                 searchLatitude = place.getLatLng().latitude;
@@ -196,7 +193,6 @@ public class ResultActivity extends AppCompatActivity {
             } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
                 // TODO: Handle the error.
                 Status status = Autocomplete.getStatusFromIntent(data);
-                //Log.i(TAG, status.getStatusMessage());
             } else if (resultCode == RESULT_CANCELED) {
                 // The user canceled the operation.
             }
@@ -211,29 +207,34 @@ public class ResultActivity extends AppCompatActivity {
             road = fAd[fAd.length-4];
         }catch (Exception e){}
 
-       // Toast.makeText(this, ""+city, Toast.LENGTH_SHORT).show();
 
         search(fullAddress,state,city,road,searchLatitude,searchLongitude);
     }
 //search functionality
     public void search(final String fullAddress, final String state, final String cityy, final String road, final double latitude, final double longitude){
-        //Log.d("Keyyy",String.valueOf(key));
         userList.clear();
         userListAdapters.notifyDataSetChanged();
 
-        //Log.d("addd",state+"  "+cityy+"  "+road );
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("User");
 
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                int c = 0;
-                //Toast.makeText(HomeActivity.this, ""+dataSnapshot.child(FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber()).getKey(), Toast.LENGTH_SHORT).show();
+                int c = 0,cc=0;
                 for (DataSnapshot d:dataSnapshot.getChildren()){
                     try {
-                        //Log.d("Keyyy",String.valueOf(key));
-                        //Toast.makeText(ResultActivity.this, "", Toast.LENGTH_SHORT).show();
-                        String address,dateOfBirth,gender,bldGroup,phnNo,deviceToken;
+                        String address,dateOfBirth,gender,bldGroup,phnNo,lastDonationDate = null,joiningDate=null;
+                        double homeAddressLat=0,homeAddressLong=0;;
+                        try {
+                            homeAddressLat = Double.parseDouble(d.child("Current home latitude").getValue().toString());
+                        }catch (Exception e){}
+
+                        try {
+                            homeAddressLong = Double.parseDouble(d.child("Current home longitude").getValue().toString());
+                        }catch (Exception e){}
+                        try {
+                            lastDonationDate = d.child("Last donation date").getValue().toString();
+                        }catch (Exception e){}
 
 
 
@@ -242,7 +243,7 @@ public class ResultActivity extends AppCompatActivity {
                            String city = d.child("City").getValue().toString();
                            String r = d.child("Road").getValue().toString();
 
-                           String userExitTime = d.child("Exit time").getValue().toString();
+                           String userExitTime = d.child("Active time").getValue().toString();
 
                            Calendar cal = Calendar.getInstance();
                            DateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
@@ -271,6 +272,9 @@ public class ResultActivity extends AppCompatActivity {
 
                            double dbLatitude = Double.parseDouble(d.child("Latitude").getValue().toString());
                            double dbLongitude = Double.parseDouble(d.child("Longitude").getValue().toString());
+                           try {
+                               lastDonationDate = d.child("Last donation date").getValue().toString();
+                           }catch (Exception e){}
 
                            String[] roadList = r.split(" ");
                            String[] stateList = statee.split(" ");
@@ -288,79 +292,139 @@ public class ResultActivity extends AppCompatActivity {
                                diffMinutes = exitTimeDifList.get(1);
                            }catch (Exception e){}
 
-                           if (d.child("Location").getValue().equals("On") ||  diffMinutes <= 30 && diffHours == 0 && diffDays == 0){//checking location on or not
-                               if (d.child("Blood Group").getValue().equals(bloodGroup)){//checking blood group here
-                                   Log.d("lennnnn",String.valueOf(checkCity(cityList,deviceCity))+" "+splitString2(fullAddress)+" "+String.valueOf((checkState(stateList,deviceState)))
-                                           +" search state = "+state+"  db state="+deviceCity);
+                           if ((d.child("Location").getValue().toString().equals("On") && diffDays ==0 && diffHours ==0 && diffMinutes<=30) ||
+                                   (d.child("Location").getValue().toString().equals("Off") && diffDays ==0 && diffHours ==0 && diffMinutes<=30)){
+                               if (d.child("Blood Group").getValue().equals(bloodGroup)){
+                                   ArrayList<Long> lastDonationDateList;
+                                   try{
+                                       lastDonationDateList = lastDonationDateDiff(lastDonationDate,currentDateandTime);
+                                       diffDaysOnLastDonation = lastDonationDateList.get(3);
+                                       diffHoursOnLastDonation = lastDonationDateList.get(2);
+                                       diffMinutesOnLastDonation = lastDonationDateList.get(1);
+                                   }catch (Exception e){}
 
-                                   if (splitString2(fullAddress) == 1 && d.child("Country").getValue().toString().trim().equals(fullAddress.trim())){//search like "Bangladesh"
-                                       fName = d.child("Full Name").getValue().toString();
-                                       address = d.child("Full address").getValue().toString();
-                                       dateOfBirth = d.child("Date of birth").getValue().toString();
-                                       bldGroup = d.child("Blood Group").getValue().toString();
-                                       phnNo = d.getKey();
-                                       gender = d.child("Gender").getValue().toString();
-                                       deviceToken = d.child("Token id").getValue().toString();
-                                       userInformation = new UserInformation(fName,address,dateOfBirth,bldGroup,phnNo,gender,deviceToken);
-                                       userList.add(userInformation);
-                                       listView.setAdapter(userListAdapters);
-                                       c++;
-                                   }
-                                   else if (splitString2(fullAddress) == 2 &&  checkCity(cityList,deviceCity) == true){//search like "Dhaka,Bangladesh"
-                                       fName = d.child("Full Name").getValue().toString();
-                                       address = d.child("Full address").getValue().toString();
-                                       dateOfBirth = d.child("Date of birth").getValue().toString();
-                                       bldGroup = d.child("Blood Group").getValue().toString();
-                                       phnNo = d.getKey();
-                                       gender = d.child("Gender").getValue().toString();
-                                       deviceToken = d.child("Token id").getValue().toString();
-                                       userInformation = new UserInformation(fName,address,dateOfBirth,bldGroup,phnNo,gender,deviceToken);
-                                       userList.add(userInformation);
-                                       listView.setAdapter(userListAdapters);
-                                       c++;
-                                   }
-                                   else if ((splitString2(fullAddress) > 2 /*&& (checkState(stateList,deviceState) == true) &&//search like "Khilkhet,Dhaka,Bangladesh"
-                                           (checkCity(cityList,deviceCity) == true)) || (splitString2(fullAddress) > 2 && (checkState(stateList,deviceState) == true) &&//search like "Khilkhet,Dhaka,Bangladesh"
-                                           (checkCity(cityList,deviceCity) == true) && checkCity(roadList,deviceRoad))*/)){
-                                       if (distance(dbLatitude,dbLongitude,latitude,longitude) <= 5000 && diffDays == 0 && diffHours == 0 && diffMinutes <=30){//finding user around 5 miles
+                                   if (diffDaysOnLastDonation>=120){
+                                       if (splitString2(fullAddress) == 1 && d.child("Country").getValue().toString().trim().equals(fullAddress.trim())){//search like "Bangladesh"
                                            fName = d.child("Full Name").getValue().toString();
                                            address = d.child("Full address").getValue().toString();
                                            dateOfBirth = d.child("Date of birth").getValue().toString();
                                            bldGroup = d.child("Blood Group").getValue().toString();
                                            phnNo = d.getKey();
                                            gender = d.child("Gender").getValue().toString();
+                                           joiningDate = d.child("Sign up date").getValue().toString();
                                            deviceToken = d.child("Token id").getValue().toString();
-                                           userInformation = new UserInformation(fName,address,dateOfBirth,bldGroup,phnNo,gender,deviceToken);
+                                           userInformation = new UserInformation(fName,address,joiningDate,dateOfBirth,bldGroup,phnNo,gender,deviceToken,R.drawable.activestatus);
                                            userList.add(userInformation);
                                            listView.setAdapter(userListAdapters);
                                            c++;
+                                           //pgsBar.setVisibility(View.GONE);
+                                       }
+                                       else if (splitString2(fullAddress) == 2 &&  checkCity(cityList,deviceCity) == true){//search like "Dhaka,Bangladesh"
+                                           fName = d.child("Full Name").getValue().toString();
+                                           address = d.child("Full address").getValue().toString();
+                                           dateOfBirth = d.child("Date of birth").getValue().toString();
+                                           bldGroup = d.child("Blood Group").getValue().toString();
+                                           phnNo = d.getKey();
+                                           gender = d.child("Gender").getValue().toString();
+                                           joiningDate = d.child("Sign up date").getValue().toString();
+                                           deviceToken = d.child("Token id").getValue().toString();
+                                           userInformation = new UserInformation(fName,address,joiningDate,dateOfBirth,bldGroup,phnNo,gender,deviceToken,R.drawable.activestatus);
+                                           userList.add(userInformation);
+                                           listView.setAdapter(userListAdapters);
+                                           c++;
+                                          // pgsBar.setVisibility(View.GONE);
+                                       }
+                                       else if ((splitString2(fullAddress) > 2 &&
+                                               (checkCity(cityList,deviceCity) == true)) || (splitString2(fullAddress) > 2 && (checkState(stateList,deviceState) == true) &&//search like "Khilkhet,Dhaka,Bangladesh"
+                                               (checkCity(cityList,deviceCity) == true) && checkCity(roadList,deviceRoad))){
+                                           if (distance(dbLatitude,dbLongitude,latitude,longitude) <= 5000){//finding user around 5 miles
+                                               fName = d.child("Full Name").getValue().toString();
+                                               address = d.child("Full address").getValue().toString();
+                                               dateOfBirth = d.child("Date of birth").getValue().toString();
+                                               bldGroup = d.child("Blood Group").getValue().toString();
+                                               phnNo = d.getKey();
+                                               gender = d.child("Gender").getValue().toString();
+                                               joiningDate = d.child("Sign up date").getValue().toString();
+                                               deviceToken = d.child("Token id").getValue().toString();
+                                               userInformation = new UserInformation(fName,address,joiningDate,dateOfBirth,bldGroup,phnNo,gender,deviceToken,R.drawable.activestatus);
+                                               userList.add(userInformation);
+                                               listView.setAdapter(userListAdapters);
+                                               c++;
+                                               //pgsBar.setVisibility(View.GONE);
+                                           }
                                        }
                                    }
                                }
                            }
-                           else if (d.child("Location").getValue().equals("On") && d.child("Blood Group").getValue().equals(bloodGroup) && (splitString2(fullAddress) > 2 && distance(dbLatitude,dbLongitude,latitude,longitude) <= 5000
-                           && diffDays == 0 && diffHours == 0 && diffMinutes <=30)){
-                               fName = d.child("Full Name").getValue().toString();
-                               address = d.child("Full address").getValue().toString();
-                               dateOfBirth = d.child("Date of birth").getValue().toString();
-                               bldGroup = d.child("Blood Group").getValue().toString();
-                               phnNo = d.getKey();
-                               gender = d.child("Gender").getValue().toString();
-                               deviceToken = d.child("Token id").getValue().toString();
-                               userInformation = new UserInformation(fName,address,dateOfBirth,bldGroup,phnNo,gender,deviceToken);
-                               userList.add(userInformation);
-                               listView.setAdapter(userListAdapters);
-                               c++;
+                           else{
+                               if (d.child("Blood Group").getValue().equals(bloodGroup)){
+                                   ArrayList<Long> lastDonationDateList;
+                                   try{
+                                       lastDonationDateList = lastDonationDateDiff(lastDonationDate,currentDateandTime);
+                                       diffDaysOnLastDonation = lastDonationDateList.get(3);
+                                       diffHoursOnLastDonation = lastDonationDateList.get(2);
+                                       diffMinutesOnLastDonation = lastDonationDateList.get(1);
+                                   }catch (Exception e){}
+                                   if (diffDaysOnLastDonation>=120){
+                                       if (splitString2(fullAddress) == 1 && d.child("Country").getValue().toString().trim().equals(fullAddress.trim())){//search like "Bangladesh"
+                                           fName = d.child("Full Name").getValue().toString();
+                                           address = d.child("Current Location").getValue().toString();
+                                           dateOfBirth = d.child("Date of birth").getValue().toString();
+                                           bldGroup = d.child("Blood Group").getValue().toString();
+                                           phnNo = d.getKey();
+                                           gender = d.child("Gender").getValue().toString();
+                                           joiningDate = d.child("Sign up date").getValue().toString();
+                                           deviceToken = d.child("Token id").getValue().toString();
+                                           userInformation = new UserInformation(fName,address,joiningDate,dateOfBirth,bldGroup,phnNo,gender,deviceToken,R.drawable.notactivestatus);
+                                           userList.add(userInformation);
+                                           listView.setAdapter(userListAdapters);
+                                           c++;
+                                           //pgsBar.setVisibility(View.GONE);
+                                       }
+                                       else if (splitString2(fullAddress) == 2 &&  checkCity(cityList,deviceCity) == true){//search like "Dhaka,Bangladesh"
+                                           fName = d.child("Full Name").getValue().toString();
+                                           address = d.child("Current Location").getValue().toString();
+                                           dateOfBirth = d.child("Date of birth").getValue().toString();
+                                           bldGroup = d.child("Blood Group").getValue().toString();
+                                           phnNo = d.getKey();
+                                           gender = d.child("Gender").getValue().toString();
+                                           joiningDate = d.child("Sign up date").getValue().toString();
+                                           deviceToken = d.child("Token id").getValue().toString();
+                                           userInformation = new UserInformation(fName,address,joiningDate,dateOfBirth,bldGroup,phnNo,gender,deviceToken,R.drawable.notactivestatus);
+                                           userList.add(userInformation);
+                                           listView.setAdapter(userListAdapters);
+                                           c++;
+                                           //pgsBar.setVisibility(View.GONE);
+                                       }
+                                       else if ((splitString2(fullAddress) > 2 &&
+                                               (checkCity(cityList,deviceCity) == true)) || (splitString2(fullAddress) > 2 && (checkState(stateList,deviceState) == true) &&//search like "Khilkhet,Dhaka,Bangladesh"
+                                               (checkCity(cityList,deviceCity) == true) && checkCity(roadList,deviceRoad))){
+                                           if (distance(homeAddressLat,homeAddressLong,latitude,longitude) <= 5000){//finding user around 5 miles
+                                               fName = d.child("Full Name").getValue().toString();
+                                               address = d.child("Current Location").getValue().toString();
+                                               dateOfBirth = d.child("Date of birth").getValue().toString();
+                                               bldGroup = d.child("Blood Group").getValue().toString();
+                                               phnNo = d.getKey();
+                                               gender = d.child("Gender").getValue().toString();
+                                               joiningDate = d.child("Sign up date").getValue().toString();
+                                               deviceToken = d.child("Token id").getValue().toString();
+                                               userInformation = new UserInformation(fName,address,joiningDate,dateOfBirth,bldGroup,phnNo,gender,deviceToken,R.drawable.notactivestatus);
+                                               userList.add(userInformation);
+                                               listView.setAdapter(userListAdapters);
+                                               c++;
+                                           }
+                                       }
+                                   }
+
+                               }
                            }
                         }
-
                     }catch (Exception e){
-                        Toast.makeText(ResultActivity.this, ""+e+" "+c, Toast.LENGTH_SHORT).show();
                     }
 
                 }
+
                 noOfDonorTv.setText("We found "+String.valueOf(c)+" donors available");
-                // donotNumberTv.setText(String.valueOf(c));
             }
 
             @Override
@@ -383,23 +447,6 @@ public class ResultActivity extends AppCompatActivity {
 
     /** calculates the distance between two locations in MILES */
     private double distance(double lat1, double lng1, double lat2, double lng2) {
-
-        /*double earthRadius = 3958.75; // in miles, change to 6371 for kilometer output
-
-        double dLat = Math.toRadians(lat2-lat1);
-        double dLng = Math.toRadians(lng2-lng1);
-
-        double sindLat = Math.sin(dLat / 2);
-        double sindLng = Math.sin(dLng / 2);
-
-        double a = Math.pow(sindLat, 2) + Math.pow(sindLng, 2)
-                * Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2));
-
-        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-
-        double dist = earthRadius * c;
-
-        return dist; // output distance, in MILES*/
 
         Location startPoint=new Location("locationA");
         startPoint.setLatitude(lat1);
@@ -435,7 +482,35 @@ public class ResultActivity extends AppCompatActivity {
             arrayList.add(diffHours);
             arrayList.add(diffDays);
 
-            //Log.d("llllll", "" + diffDays + " " + diffHours + " " + diffMinutes + " " + diffSeconds + " exit time  " + userExitTime + "  current " + currentDateandTime + " " + d1 + " " + d2);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return arrayList;
+    }
+
+    public ArrayList<Long> lastDonationDateDiff(String userExitTime, String currentDateandTime){
+        ArrayList<Long> arrayList = new ArrayList<>();
+        SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+
+        Date d1 = null;
+        Date d2 = null;
+
+        try {
+            d1 = format.parse(userExitTime);
+            d2 = format.parse(currentDateandTime);
+
+            //in milliseconds
+            long diff = d2.getTime() - d1.getTime();
+
+            diffSeconds = diff / 1000 % 60;
+            diffMinutes = diff / (60 * 1000) % 60;
+            diffHours = diff / (60 * 60 * 1000) % 24;
+            diffDays = diff / (24 * 60 * 60 * 1000);
+
+            arrayList.add(diffSeconds);
+            arrayList.add(diffMinutes);
+            arrayList.add(diffHours);
+            arrayList.add(diffDays);
 
         } catch (Exception e) {
             e.printStackTrace();

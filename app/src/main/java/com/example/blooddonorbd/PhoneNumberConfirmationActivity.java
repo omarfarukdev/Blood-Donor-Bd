@@ -38,7 +38,7 @@ public class PhoneNumberConfirmationActivity extends AppCompatActivity {
     private String verificationId;
     ProgressDialog progressBar;
     ProgressDialog progressDialog;
-    TextView phoneNumberTv;
+    TextView phoneNumberTv,detailsPhnNumTv;
     FirebaseAuth auth;
     ConstraintLayout constraintLayout;
 
@@ -46,17 +46,19 @@ public class PhoneNumberConfirmationActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_phone_number_confirmation);
-        ///getSupportActionBar().hide();
+
         auth = FirebaseAuth.getInstance();
         codeEt = findViewById(R.id.codeEt);
         constraintLayout = findViewById(R.id.phoneNumberConfActivity);
 
         phoneNumberTv = findViewById(R.id.textView3);
+        detailsPhnNumTv = findViewById(R.id.textView4);
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Please wait");
 
         String phoneNumber = getIntent().getStringExtra("phoneNumber");
         phoneNumberTv.setText("Veriy "+phoneNumber);
+        detailsPhnNumTv.setText("Waiting to detect an verification code from "+phoneNumber+" phone number.");
         sendVerificationCode(phoneNumber);
 
     }
@@ -88,8 +90,6 @@ public class PhoneNumberConfirmationActivity extends AppCompatActivity {
 
         @Override
         public void onCodeSent(String s, PhoneAuthProvider.ForceResendingToken forceResendingToken) {
-           // super.onCodeSent(s, forceResendingToken);
-           // Toast.makeText(PhoneNumberConfirmationActivity.this, "Code sent called", Toast.LENGTH_SHORT).show();
             verificationId = s;
             progressBar.dismiss();
         }
@@ -125,16 +125,8 @@ public class PhoneNumberConfirmationActivity extends AppCompatActivity {
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                     int count = (int) dataSnapshot.getChildrenCount();
-                                    /*FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
-                                        @Override
-                                        public void onSuccess(InstanceIdResult instanceIdResult) {
-                                            String token = instanceIdResult.getToken();
-                                            // send it to server
-                                        }
-                                    });*/
                                     if (count>=8 && !isLocationEnabled() && constraintLayout.getVisibility() == View.VISIBLE){//if database value count > than 1 then this condition will be work
                                         Intent intent = new Intent(PhoneNumberConfirmationActivity.this,DiscoverableActivity.class);
-                                        Toast.makeText(PhoneNumberConfirmationActivity.this, "Not enabled man !", Toast.LENGTH_SHORT).show();
                                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                         progressDialog.dismiss();
                                         finish();
@@ -153,7 +145,6 @@ public class PhoneNumberConfirmationActivity extends AppCompatActivity {
                                         startActivity(intent);
                                     }
                                     else{
-                                        //Toast.makeText(PhoneNumberConfirmationActivity.this, "Phone number confirmation successful", Toast.LENGTH_SHORT).show();
                                         Intent intent = new Intent(PhoneNumberConfirmationActivity.this, SetupProfileActivity.class);
                                         databaseReference.child("User id").setValue(task.getResult().getUser().getUid());
                                         FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
@@ -189,7 +180,6 @@ public class PhoneNumberConfirmationActivity extends AppCompatActivity {
                 locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
     }
     public void nextBtOnPhoneVerifyActivity(View view) {
-        //DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("User").child(auth.getCurrentUser().getPhoneNumber());
         String code = codeEt.getText().toString();
         verifyVerificationCode(code);
     }

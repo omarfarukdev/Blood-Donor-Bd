@@ -50,8 +50,8 @@
             android:id="@+id/searchImg"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginLeft="8dp"
+            android:layout_marginStart="268dp"
+            android:layout_marginLeft="268dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginRight="8dp"
@@ -59,30 +59,11 @@
             android:onClick="image"
             android:src="@drawable/search"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/imageView4"
-            app:layout_constraintHorizontal_bias="0.983"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.07" />
-
-        <ImageView
-            android:id="@+id/imageView4"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginRight="8dp"
-            android:layout_marginBottom="8dp"
-            android:onClick="image"
-            android:src="@drawable/user"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.977"
+            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.061" />
+            app:layout_constraintVertical_bias="0.0" />
 
         <TextView
             android:id="@+id/textView11"
@@ -132,7 +113,7 @@
             android:layout_marginLeft="8dp"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
-            android:text="We found 18 donors available"
+            android:text="We found 0 donors available"
             android:textColor="#FAF9F9"
             android:textSize="18dp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -148,12 +129,19 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="8"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:layout_centerInParent="true"
+        android:indeterminateTint="#F52020"
+        android:layout_gravity="center"
         >
 
         <ListView
             android:id="@+id/userListListView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
@@ -162,6 +150,13 @@
             app:layout_constraintVertical_bias="1.0">
 
         </ListView>
+        <TextView
+            android:id="@+id/listviewEmptyMsgTv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="No donor found :("
+            />
+
     </LinearLayout>
 
 </LinearLayout>
