@@ -37,7 +37,6 @@ public class DiscoverableActivity extends AppCompatActivity {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked){
-                    Toast.makeText(DiscoverableActivity.this, "Enabled switch", Toast.LENGTH_SHORT).show();
                     runTimePermission();
                     startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
                 }
@@ -61,8 +60,6 @@ public class DiscoverableActivity extends AppCompatActivity {
         if (requestCode == 100){
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED){
                 locationSw.setChecked(true);
-                Intent i = new Intent(DiscoverableActivity.this,SignInActivity.class);//dummy activity added
-                startActivity(i);
             }
         }
     }

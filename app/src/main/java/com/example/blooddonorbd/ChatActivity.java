@@ -41,7 +41,7 @@ public class ChatActivity extends AppCompatActivity {
     private ImageView sendBt;
     private  EditText editmessage;
     private ListView messagelist;
-    private String recivername,recivernumber,currentnumber,reciverTokenId,currentUserToken;
+    public String senderName,recivernumber,currentnumber,reciverTokenId,currentUserToken;
     ArrayList <Integer> t;
     private MessageListAdapters arrayAdapter;
     private ArrayList<MessageInfo>  mesList;
@@ -52,6 +52,7 @@ public class ChatActivity extends AppCompatActivity {
     DataSnapshot dd;
     ArrayList<DataSnapshot> dataSnapshotsList;
     private LinearLayout linearLayout;
+    ArrayList<String> nameList;
 
     private boolean checkState = false;
     @Override
@@ -69,13 +70,47 @@ public class ChatActivity extends AppCompatActivity {
         linearLayout = findViewById(R.id.chatActivity);
 
         Intent intent=getIntent();
-        recivername=intent.getStringExtra("name");
+        //senderName=intent.getStringExtra("name");
         recivernumber=intent.getStringExtra("phoneNo");
-        reciverTokenId = intent.getStringExtra("tokenId");
+        //reciverTokenId = intent.getStringExtra("tokenId");
 
-        Toast.makeText(this, ""+recivernumber, Toast.LENGTH_SHORT).show();
+       /* if (recivernumber==null){
+            ResultActivity resultActivity = new ResultActivity();
+            reciverTokenId = resultActivity.deviceToken;
+        }*/
+       nameList = new ArrayList<>();
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("User").child(recivernumber);
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                try{
+                    reciverTokenId = dataSnapshot.child("Token id").getValue().toString();
+                }catch (Exception e){}
+                try {
+                    name.setText( dataSnapshot.child("Full Name").getValue().toString());
+                }catch (Exception e){}
+            }
 
-        name.setText(recivername);
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        DatabaseReference databaseReference1 = FirebaseDatabase.getInstance().getReference().child("User").child(FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber());
+        databaseReference1.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                senderName = dataSnapshot.child("Full Name").getValue().toString();
+                //name.setText(senderName);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
         phoneno.setText(recivernumber);
         currentnumber= FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber();
 
@@ -128,7 +163,7 @@ public class ChatActivity extends AppCompatActivity {
                             DatabaseReference reference2=FirebaseDatabase.getInstance().getReference().child("Chat").child(databaseReference1.getKey()).push();
                             cc = 1;
                            // if (recivernumber.equals(FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber()))
-                            messageInfo = new MessageInfo(editmessage.getText().toString(),currentDateandTime,recivernumber,reciverTokenId,currentnumber,currentUserToken,recivername,"false");
+                            messageInfo = new MessageInfo(editmessage.getText().toString(),currentDateandTime,recivernumber,reciverTokenId,currentnumber,currentUserToken,senderName,"false");
                             reference2.setValue(messageInfo);
                             editmessage.setText("");
                            setup();
@@ -175,7 +210,7 @@ public class ChatActivity extends AppCompatActivity {
                         SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd 'at' HH:mm:ss");
                         String currentDateandTime = sdf.format(new Date());
                         if(editmessage.getText().toString().length()!=0){
-                            messageInfo = new MessageInfo(editmessage.getText().toString(),currentDateandTime,recivernumber,reciverTokenId,currentnumber,currentUserToken,recivername,"false");
+                            messageInfo = new MessageInfo(editmessage.getText().toString(),currentDateandTime,recivernumber,reciverTokenId,currentnumber,currentUserToken,senderName,"false");
                             reference.setValue(messageInfo);
                             editmessage.setText("");
                         }
@@ -220,7 +255,7 @@ public class ChatActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 try{
                     if((dataSnapshot.child("PhoneNo1").getValue().equals(FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber()) && dataSnapshot.child("PhoneNo2").getValue().equals(recivernumber))
-                            || (dataSnapshot.child("PhoneNo2").getValue().equals(FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber()) && dataSnapshot.child("PhoneNo1").getValue().equals(recivernumber) )){
+                            || (dataSnapshot.child("PhoneNo1").getValue().equals(recivernumber)) && dataSnapshot.child("PhoneNo2").getValue().equals(FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber()) ){
                         ccc++;
                        // if (ccc==1){
                             readMessage(d.getKey());
@@ -242,7 +277,6 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     public void readMessage(final String chatKey) {
-        Log.d("uuuuu", "called");
         final int temp = c;
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("Chat").child(chatKey);
         databaseReference.addValueEventListener(new ValueEventListener() {
@@ -271,7 +305,6 @@ public class ChatActivity extends AppCompatActivity {
                 }
                 }
 
-                Log.d("uuuuu", ""+dataSnapshotsList.size());
                 for (int i=0;i<dataSnapshotsList.size();i++){
                     //if (reciver.equals(currentnumber)){
                         HashMap<String, Object> hashMap = new HashMap<>();
@@ -291,7 +324,6 @@ public class ChatActivity extends AppCompatActivity {
 
     private void NewId() {
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-        Log.d("count", String.valueOf(cc!=1));
             if(editmessage.getText().toString().length()!=0){
             DatabaseReference reference1=database.child("Chat").push();
             reference1.child("PhoneNo1").setValue(currentnumber);
@@ -301,7 +333,7 @@ public class ChatActivity extends AppCompatActivity {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd 'at' HH:mm:ss");
             String currentDateandTime = sdf.format(new Date());
 
-            messageInfo = new MessageInfo(editmessage.getText().toString(),currentDateandTime,recivernumber,reciverTokenId,currentnumber,currentUserToken,recivername,"false");
+            messageInfo = new MessageInfo(editmessage.getText().toString(),currentDateandTime,recivernumber,reciverTokenId,currentnumber,currentUserToken,senderName,"false");
             reference2.setValue(messageInfo);
 
             editmessage.setText("");
@@ -371,7 +403,6 @@ private void conversation(DatabaseReference databaseReference){
                         messagelist.setAdapter(arrayAdapter);
                         // Log.d("ssssss",""+conversationList.get(1)+""+conversationList.get(3));
                         arrayAdapter.notifyDataSetChanged();
-                        Log.d("conversa","1");
                         conversationList.clear();
                     }
 
@@ -402,7 +433,8 @@ private void conversation(DatabaseReference databaseReference){
 }
     public void backBt(View view) {
         //finish();
-        System.exit(0);
+        System.exit(1);
+        //return;
     }
 
     @Override
@@ -415,6 +447,7 @@ private void conversation(DatabaseReference databaseReference){
     public void onBackPressed() {
         super.onBackPressed();
         //finish();
-        System.exit(0);
+        System.exit(1);
+        //return;
     }
 }

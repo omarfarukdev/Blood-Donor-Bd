@@ -16,9 +16,13 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
+import android.net.Uri;
+import android.os.Build;
+import android.os.PersistableBundle;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -56,6 +60,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 
 public class HomeActivity extends AppCompatActivity implements LocationListener {
@@ -80,24 +85,17 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-//        getSupportActionBar().hide();
         currentLocationTv = findViewById(R.id.currentlocation);
         donotNumberTv = findViewById(R.id.donorNumberTv);
         bloodGroupSpinner = findViewById(R.id.bloodgroupSpHome);
         userimage=findViewById(R.id.imageView6);
 
-        //service started here
         Intent i = new Intent(getApplicationContext(), LocationService.class);
-        Toast.makeText(this, "Service started", Toast.LENGTH_SHORT).show();
         startService(i);
 
-        //database reference
-        //DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("User").child(FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber());
         ArrayAdapter<String> adapter_option=new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item,getResources().getStringArray(R.array.bloodgroup));
         adapter_option.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         bloodGroupSpinner.setAdapter(adapter_option);
-        //bloodGroupSpinner.setSelection(2);
-       // spinnerSelectedItem = bloodGroupSpinner.getSelectedItem().toString();
         bloodGroupSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -107,13 +105,6 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
 
-            }
-        });
-
-        donotNumberTv.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(HomeActivity.this, "" + fullAddress, Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -135,14 +126,60 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         switch (requestCode) {
             case 10: {
-                getLocation();
+                //getLocation();
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // now, you have permission go ahead
+                    // TODO: something
+                    getLocation();
+
+                } else {
+
+                    if (ActivityCompat.shouldShowRequestPermissionRationale(HomeActivity.this,
+                            ACCESS_FINE_LOCATION)) {
+                        // now, user has denied permission (but not permanently!)
+                        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                        builder.setCancelable(false);
+                        builder.setMessage("We need your location to find out near donor. Please allow the permission");
+                        builder.setPositiveButton("Try again", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                getLocation();
+                            }
+                        });
+                        builder.show();
+
+                    } else {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                        builder.setCancelable(false);
+                        builder.setMessage("We need your location to find out near donor. Please allow the permission"+"\n\nSetting -> App permission -> Location");
+                        builder.setPositiveButton("Go to setting", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                Intent intent = new Intent();
+                                intent.setAction(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                                Uri uri = Uri.fromParts("package", getPackageName(), null);
+                                intent.setData(uri);
+                                startActivity(intent);
+                                //getLocation();
+                            }
+                        });
+                        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                finish();
+                            }
+                        });
+                        builder.show();
+                    }
+                }
+                break;
             }
-            break;
         }
     }
-
     private void getLocation() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) !=
+                PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
             // here to request the missing permissions, and then overriding
@@ -150,15 +187,17 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
             //                                          int[] grantResults)
             // to handle the case where the user grants the permission. See the documentation
             // for ActivityCompat#requestPermissions for more details.
+            //if (ActivityCompat.shouldShowRequestPermissionRationale())
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 10);
+
             return;
         }
+
         fusedLocationClient.getLastLocation()
                 .addOnSuccessListener(this, new OnSuccessListener<Location>() {
                     @Override
                     public void onSuccess(Location location) {
                         // Got last known location. In some rare situations this can be null.
-                        Toast.makeText(HomeActivity.this, "fused location", Toast.LENGTH_SHORT).show();
                         if (location != null) {
                             // Logic to handle location object
 
@@ -265,7 +304,7 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
                                                 String[] deviceCity = city.split(" ");*/
 
                                                 if(!d.getKey().equals(FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber())) {
-                                                    userExitTime = d.child("Exit time").getValue().toString();
+                                                    userExitTime = d.child("Active time").getValue().toString();
 
                                                     Calendar cal = Calendar.getInstance();
                                                     DateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
@@ -280,10 +319,9 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
                                                          diffMinutes = exitTimeDifList.get(1);
                                                     }catch (Exception e){}
 
-                                                    if ((d.child("Location").getValue().equals("On")) &&
-                                                            (distance(latitude, longitude, dbLatitude, dbLongitude) <= 5000 || distance(latitude, longitude, homeAddressLat, homeAddressLong) <= 5000) &&
-                                                            diffMinutes <= 30 && diffHours == 0 && diffDays == 0 ){
 
+                                                    if ((d.child("Location").getValue().toString().equals("On") && diffDays ==0 && diffHours ==0 && diffMinutes<=30) ||
+                                                            (d.child("Location").getValue().toString().equals("Off") && diffDays ==0 && diffHours ==0 && diffMinutes<=30)){
                                                         ArrayList<Long> lastDonationDateList;
                                                         try{
                                                             lastDonationDateList = dateDifference(lastDonationDate,currentDateandTime);
@@ -292,17 +330,27 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
                                                             diffMinutesOnLastDonation = lastDonationDateList.get(1);
                                                         }catch (Exception e){}
 
-                                                        if(diffDaysOnLastDonation <= 120){//checking here,user last donation date was 120 days before or not
+                                                        if(diffDaysOnLastDonation >= 120 &&  (distance(latitude, longitude, dbLatitude, dbLongitude) <= 5000) ){//checking here,user last donation date was 120 days before or not
                                                             c++;
+                                                            //Toast.makeText(HomeActivity.this, "uuu"+diffDaysOnLastDonation, Toast.LENGTH_SHORT).show();
+
                                                         }
 
-                                                    } else if ((d.child("Location").getValue().equals("Off")) && diffMinutes <= 30 && diffHours == 0 && diffDays == 0) {
+                                                    } else if ((distance(latitude, longitude, homeAddressLat, homeAddressLong) <= 5000)){
+                                                        ArrayList<Long> lastDonationDateList;
+                                                        try{
+                                                            lastDonationDateList = dateDifference(lastDonationDate,currentDateandTime);
+                                                            diffDaysOnLastDonation = lastDonationDateList.get(3);
+                                                            diffHoursOnLastDonation = lastDonationDateList.get(2);
+                                                            diffMinutesOnLastDonation = lastDonationDateList.get(1);
+                                                        }catch (Exception e){}
+                                                    if(diffDaysOnLastDonation >=120) {
                                                         c++;
                                                     }
                                                 }
+                                                }
 
                                             }catch (Exception e){
-                                                Toast.makeText(HomeActivity.this, ""+e, Toast.LENGTH_SHORT).show();
                                             }
 
                                         }
@@ -319,7 +367,7 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
                             }
                             //Toast.makeText(HomeActivity.this, "" + location.getLongitude(), Toast.LENGTH_SHORT).show();
                         } else {
-                            Toast.makeText(HomeActivity.this, "Null", Toast.LENGTH_SHORT).show();
+                            //Toast.makeText(HomeActivity.this, "Null", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -377,7 +425,6 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
         intent.putExtra("bloodGroup",spinnerSelectedItem);
         intent.putExtra("latitude",latitude);
         intent.putExtra("longitude",longitude);
-        Toast.makeText(this, ""+spinnerSelectedItem, Toast.LENGTH_SHORT).show();
         try{
             intent.putExtra("road",road);
         }catch (Exception e){}
@@ -415,6 +462,12 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        //service started here
+    }
+
+    @Override
     public void onBackPressed() {
         //super.onBackPressed();
         try{
@@ -426,14 +479,10 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
         dialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-              /*  Intent intent = new Intent(ProfileActivity.this,SplashActivity.class);
-                intent.addCategory(Intent.CATEGORY_HOME);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);*/
                 Calendar cal = Calendar.getInstance();
                 DateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
                 String currentDateandTime = sdf.format(cal.getTime());
-                databaseReferenceExit.child("Exit time").setValue(currentDateandTime);
+                databaseReferenceExit.child("Active time").setValue(currentDateandTime);
                 finish();
             }
         });
