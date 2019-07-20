@@ -79,14 +79,17 @@ public class MessageHistoryAdapters extends RecyclerView.Adapter<MessageHistoryA
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public TextView name;
         public TextView message;
-        public TextView time;
+        public TextView time,emptyMessageTv;
         public ConstraintLayout constraintLayout;
         public ViewHolder(View itemView) {
             super(itemView);
             this.name = (TextView) itemView.findViewById(R.id.username);
             this.message = itemView.findViewById(R.id.messageTv);
             this.time = itemView.findViewById(R.id.timeanddate);
+
             constraintLayout = (ConstraintLayout) itemView.findViewById(R.id.constraintLayout);
+
+
         }
 
 }
