@@ -72,7 +72,7 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
     private FusedLocationProviderClient client;
     private Spinner bloodGroupSpinner;
     private TextView currentLocationTv, donotNumberTv;
-    private String fullAddress, city, country, state,road,bloodGroup,spinnerSelectedItem;
+    private String fullAddress, city,currentcity , country, state,road,bloodGroup,spinnerSelectedItem;
     private FusedLocationProviderClient fusedLocationClient;
     private ImageView userimage;
     private double latitude,longitude;
@@ -115,7 +115,7 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
             @Override
             public void onClick(View v) {
                 Intent intent=new Intent(HomeActivity.this,ProfileActivity.class);
-                intent.putExtra("city",city);
+                intent.putExtra("city",currentcity );
                 startActivity(intent);
             }
         });
@@ -276,6 +276,7 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
                                                 String lastDonationDate = null;
                                                 String statee = d.child("State").getValue().toString();
                                                 String city = d.child("City").getValue().toString();
+                                                currentcity = d.child("Current home city").getValue().toString();
                                                 String bloodGrp = d.child("Blood Group").getValue().toString();
                                                 String userExitTime;
                                                 try {

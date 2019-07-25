@@ -24,8 +24,6 @@ public class DiscoverableActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_discoverable);
 
-        //getSupportActionBar().hide();
-
         final LocationManager manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);//getting service from system
         locationSw = findViewById(R.id.locationSw);
 
