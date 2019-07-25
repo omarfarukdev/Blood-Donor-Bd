@@ -28,7 +28,7 @@ import java.util.Calendar;
 
 public class ProfileActivity extends AppCompatActivity {
     TextView username,usernumber;
-    CardView message,setting,logout,notification,help;
+    CardView message,setting,logout,help;
     String currentnumber,name,city;
     DatabaseReference databaseReference;
 
@@ -41,7 +41,6 @@ public class ProfileActivity extends AppCompatActivity {
         username=findViewById(R.id.username);
         usernumber=findViewById(R.id.usernumber);
         message=findViewById(R.id.message);
-        notification=findViewById(R.id.notification);
         setting=findViewById(R.id.setting);
         logout=findViewById(R.id.logout);
 
@@ -84,13 +83,7 @@ public class ProfileActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-        notification.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent=new Intent(ProfileActivity.this,NotificationActivity.class);
-                startActivity(intent);
-            }
-        });
+
         setting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

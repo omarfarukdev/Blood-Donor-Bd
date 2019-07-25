@@ -26,9 +26,10 @@ public class BloodOrganizationActivity extends AppCompatActivity {
 
    private Toolbar toolbar;
    private ListView bloodorga;
-   private String city;
+   private String city,cityname,citypostcode;
    private ArrayList<BloodOrganizationInfo> bloodorgalist;
    private DatabaseReference reference;
+    String [] city1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,6 +49,15 @@ public class BloodOrganizationActivity extends AppCompatActivity {
 
         bloodorgalist=new ArrayList<>();
         city = getIntent().getStringExtra("city");
+        try{
+            city1=city.split(" ");
+            cityname=city1[1];
+            citypostcode=city1[2];
+        }
+        catch (Exception e)
+        {
+
+        }
         final BloodOrganizationListAdaptrs bloodOrganizationListAdaptrs=new BloodOrganizationListAdaptrs(this,0,bloodorgalist);
         reference= FirebaseDatabase.getInstance().getReference().child("Blood Organization");
         reference.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -55,7 +65,7 @@ public class BloodOrganizationActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for(DataSnapshot d:dataSnapshot.getChildren())
                 try{
-                    if(d.child("City").getValue().toString().equals(city.trim())){
+                    if(d.child("City").getValue().toString().equals(cityname.trim())){
                         Log.d("MMMM",""+d.child("Phone").getValue().toString());
                         BloodOrganizationInfo bloodOrganizationInfo=new BloodOrganizationInfo(d.child("Name").getValue().toString(),d.child("Phone").getValue().toString());
                         bloodorgalist.add(bloodOrganizationInfo);
