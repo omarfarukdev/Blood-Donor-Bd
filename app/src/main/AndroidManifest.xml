@@ -23,7 +23,6 @@
         <activity android:name=".BloodBankActivity" />
         <activity android:name=".AmbulanceActivity" />
         <activity android:name=".HelpActivity" />
-        <activity android:name=".NotificationActivity" />
         <activity android:name=".SettingActivity" />
         <activity android:name=".ChatActivity">
             <intent-filter>
