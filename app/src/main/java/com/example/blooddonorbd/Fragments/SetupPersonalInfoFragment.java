@@ -4,6 +4,8 @@ import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.icu.util.Calendar;
 import android.location.LocationManager;
 import android.os.Build;
@@ -13,6 +15,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +27,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.example.blooddonorbd.DiscoverableActivity;
+import com.example.blooddonorbd.EditProfileActivity;
 import com.example.blooddonorbd.HomeActivity;
 import com.example.blooddonorbd.Models.UserInformation;
 import com.example.blooddonorbd.R;
@@ -66,6 +70,8 @@ public class SetupPersonalInfoFragment extends Fragment {
     Button nextBt;
     int REQUEST_CODE = 10;
     int AUTOCOMPLETE_REQUEST_CODE =1;
+    String lastdate;
+    private DatePickerDialog.OnDateSetListener mDatasetListener,bDatasetListener;
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -109,25 +115,42 @@ public class SetupPersonalInfoFragment extends Fragment {
         }
         //final Calendar calendar1 = Calendar.getInstance();
         final java.util.Calendar calendar1 = java.util.Calendar.getInstance();
+        final SimpleDateFormat formatter = new SimpleDateFormat("yyyy");
+        final SimpleDateFormat formatterd = new SimpleDateFormat("dd");
+        final SimpleDateFormat formatterm = new SimpleDateFormat("MM");
+        final Date date = new Date();
+        final String d=formatter.format(date);
+        Log.d("oaaaa",""+d);
+        calendar1.set(Calendar.DAY_OF_MONTH,Integer.parseInt(formatterd.format(date)));
+        calendar1.set(Calendar.MONTH,(Integer.parseInt(formatterm.format(date))-1));
+        calendar1.set(Calendar.YEAR,Integer.parseInt(formatter.format(date)));
+        final java.util.Calendar calendar = java.util.Calendar.getInstance();
         lastDonationDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                        calendar1.set(Calendar.YEAR, year);
-                        calendar1.set(Calendar.MONTH, month);
-                        calendar1.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-                        DateFormat sdf = new SimpleDateFormat("HH:mm:ss");
-                        String currentTime = sdf.format(calendar1.getTime());
 
-                        lastDonationDate.setText((month+1)+"/"+dayOfMonth+"/"+year+" "+currentTime);
-                    }
-                };
-                new DatePickerDialog(getActivity(), date, calendar1.get(Calendar.YEAR), calendar1.get(Calendar.MONTH), calendar1.get(Calendar.DAY_OF_MONTH)).show();
+                int year=calendar.get(Calendar.YEAR);
+                int month=calendar.get(Calendar.MONTH);
+                int day=calendar.get(Calendar.DAY_OF_MONTH);
+                DatePickerDialog dialog=new DatePickerDialog(getActivity(),android.R.style.Theme_Holo_Light_Dialog_MinWidth,mDatasetListener,year,month,day);
+                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                dialog.getDatePicker().setMaxDate(calendar1.getTimeInMillis());
+                dialog.show();
             }
-
         });
+        mDatasetListener = new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                DateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+                String currentTime = sdf.format(calendar.getTime());
+                calendar.set(Calendar.YEAR,year);
+                calendar.set(Calendar.MONTH,month);
+                calendar.set(Calendar.DAY_OF_MONTH,dayOfMonth);
+                lastdate=(month+1) + "/"+dayOfMonth+"/"+year+" "+currentTime;
+                String date=dayOfMonth+"/"+(month+1) + "/"+year;
+                lastDonationDate.setText(date);
+            }
+        };
 
 
         final java.util.Calendar calendar2 = java.util.Calendar.getInstance();
@@ -136,19 +159,26 @@ public class SetupPersonalInfoFragment extends Fragment {
         dateOfBirth.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                        calendar2.set(Calendar.YEAR, year);
-                        calendar2.set(Calendar.MONTH, month);
-                        calendar2.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-                        dateOfBirth.setText(dayOfMonth+"/"+(month+1)+"/"+year);
-                    }
-                };
-                new DatePickerDialog(getActivity(), date, calendar2.get(Calendar.YEAR), calendar2.get(Calendar.MONTH), calendar2.get(Calendar.DAY_OF_MONTH)).show();
-            }
 
+                int year=calendar2.get(Calendar.YEAR);
+                int month=calendar2.get(Calendar.MONTH);
+                int day=calendar2.get(Calendar.DAY_OF_MONTH);
+                DatePickerDialog dialog=new DatePickerDialog(getActivity(),android.R.style.Theme_Holo_Light_Dialog_MinWidth,bDatasetListener,year,month,day);
+                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                dialog.getDatePicker().setMaxDate(calendar1.getTimeInMillis());
+                dialog.show();
+            }
         });
+        bDatasetListener = new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                calendar2.set(Calendar.YEAR,year);
+                calendar2.set(Calendar.MONTH,month);
+                calendar2.set(Calendar.DAY_OF_MONTH,dayOfMonth);
+                String date=dayOfMonth+"/"+(month+1) + "/"+year;
+                dateOfBirth.setText(date);
+            }
+        };
 
         nextBt.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -256,7 +286,7 @@ public class SetupPersonalInfoFragment extends Fragment {
                     databaseReference.child("Blood Group").setValue(bloodGroup.getSelectedItem().toString());
                     databaseReference.child("Date of birth").setValue(dateOfBirth.getText().toString());
                     databaseReference.child("Gender").setValue(gender.getSelectedItem().toString());
-                    databaseReference.child("Last donation date").setValue(lastDonationDate.getText().toString());
+                    databaseReference.child("Last donation date").setValue(lastdate);
                     //databaseReference.child("Current home road").setValue(road);
                     //databaseReference.child("Full Name").setValue(fullName.getText().toString());
                     if (isLocationEnabled()){

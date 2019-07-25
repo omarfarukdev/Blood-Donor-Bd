@@ -1,6 +1,8 @@
 package com.example.blooddonorbd;
 
 import android.app.DatePickerDialog;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.icu.util.Calendar;
 import android.os.Build;
 import android.support.annotation.NonNull;
@@ -22,21 +24,32 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+
 public class EditProfileActivity extends AppCompatActivity {
-    EditText birthdate,phoneno,fullname,lastdonationdate;
-    String name,birthday,currentnumber,gender,bloodgroup,donationdate,bloodGroupSp,genderSp;
+    EditText birthdate,fullname,lastdonationdate;
+    String name,birthday,currentnumber,gender,bloodgroup,donationdate,bloodGroupSp,genderSp,donatedate,lastdat,lastdondate,time;
     Spinner bloodgroupsp,gendersp;
     DatabaseReference databaseReference;
+    String [] lastdate;
+    String [] birdate;
+    String [] lastdateofdonation;
+    ArrayList<String> dondate=new ArrayList<>();
+    final java.util.Calendar calendar = java.util.Calendar.getInstance();
+    final java.util.Calendar calendar1 = java.util.Calendar.getInstance();
+
+    private DatePickerDialog.OnDateSetListener mDatasetListener,bDatasetListener;
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_profile);
-        //getSupportActionBar().hide();
 
         birthdate=findViewById(R.id.dateOfBirthEt);
-        phoneno=findViewById(R.id.phonenumber);
         fullname=findViewById(R.id.fullNameEt);
         lastdonationdate=findViewById(R.id.lastDonationDateEt);
         bloodgroupsp=findViewById(R.id.bloodGroup);
@@ -73,75 +86,114 @@ public class EditProfileActivity extends AppCompatActivity {
         });
 
         currentnumber= FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber();
-        phoneno.setText(currentnumber);
 
          databaseReference = FirebaseDatabase.getInstance().getReference().child("User").child(currentnumber);
-        databaseReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot d:dataSnapshot.getChildren()){
-                    if (d.getKey().equals("Full Name")){
-                        name=d.getValue().toString();
-                        fullname.setText(name);
-                    }
-                    if (d.getKey().equals("Date of birth")){
-                        birthday=d.getValue().toString();
-                        birthdate.setText(birthday);
-                    }
-                    if (d.getKey().equals("Gender")){
-                        gender=d.getValue().toString();
-                        Gender(gender);
-                    }
-                    if (d.getKey().equals("Blood Group")){
-                        bloodgroup=d.getValue().toString();
-                        BloodGroup(bloodgroup);
 
-                    }
-                    if(d.getKey().equals("Last donation date")){
-                        donationdate=d.getValue().toString();
-                        lastdonationdate.setText(donationdate);
-                    }
-                }
+         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+             @Override
+             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                 for (DataSnapshot d:dataSnapshot.getChildren()){
+                     if (d.getKey().equals("Full Name")){
+                         name=d.getValue().toString();
+                         fullname.setText(name);
+                     }
+                     if (d.getKey().equals("Date of birth")){
+                         birthday=d.getValue().toString();
+                         String [] date=birthday.split("/");
+                         calendar1.set(Calendar.YEAR,Integer.parseInt(date[2]));
+                         calendar1.set(Calendar.MONTH,(Integer.parseInt(date[1])-1));
+                         calendar1.set(Calendar.DAY_OF_MONTH,Integer.parseInt(date[0]));
+                         birthdate.setText(birthday);
+                     }
+                     if (d.getKey().equals("Gender")){
+                         gender=d.getValue().toString();
+                         Gender(gender);
+                     }
+                     if (d.getKey().equals("Blood Group")){
+                         bloodgroup=d.getValue().toString();
+                         BloodGroup(bloodgroup);
 
-            }
+                     }
+                     if(d.getKey().equals("Last donation date")){
+                         donationdate=d.getValue().toString();
+                         dondate.add(donationdate);
+                         lastdondate=donationdate;
+                         String [] date=donationdate.split(" ");
+                         String [] date1=date[0].split("/");
+                        // Log.d("oaaaa",""+lastdondate);
+                         calendar.set(Calendar.YEAR,Integer.parseInt(date1[2]));
+                         calendar.set(Calendar.MONTH,(Integer.parseInt(date1[0])-1));
+                         calendar.set(Calendar.DAY_OF_MONTH,Integer.parseInt(date1[1]));
+                         lastdonationdate.setText(date1[1]+"/"+date1[0]+"/"+date1[2]+" "+date[1]);
+                     }
+                 }
+             }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+             @Override
+             public void onCancelled(@NonNull DatabaseError databaseError) {
 
-            }
-        });
-        final java.util.Calendar calendar1 = java.util.Calendar.getInstance();
+             }
+         });
+        final java.util.Calendar calendar2 = java.util.Calendar.getInstance();
+        final SimpleDateFormat formatter = new SimpleDateFormat("yyyy");
+        final SimpleDateFormat formatterd = new SimpleDateFormat("dd");
+        final SimpleDateFormat formatterm = new SimpleDateFormat("MM");
+        final Date date = new Date();
+        final String d=formatter.format(date);
+        Log.d("oaaaa",""+d);
+        calendar2.set(Calendar.DAY_OF_MONTH,Integer.parseInt(formatterd.format(date)));
+        calendar2.set(Calendar.MONTH,(Integer.parseInt(formatterm.format(date))-1));
+        calendar2.set(Calendar.YEAR,Integer.parseInt(formatter.format(date)));
         lastdonationdate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                        calendar1.set(Calendar.YEAR, year);
-                        calendar1.set(Calendar.MONTH, month);
-                        calendar1.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-                        lastdonationdate.setText(dayOfMonth+"/"+(month+1)+"/"+year);
-                    }
-                };
-                new DatePickerDialog(EditProfileActivity.this, date, calendar1.get(Calendar.YEAR), calendar1.get(Calendar.MONTH), calendar1.get(Calendar.DAY_OF_MONTH)).show();
+
+                int year=calendar.get(Calendar.YEAR);
+                int month=calendar.get(Calendar.MONTH);
+                int day=calendar.get(Calendar.DAY_OF_MONTH);
+
+                DatePickerDialog dialog=new DatePickerDialog(EditProfileActivity.this,android.R.style.Theme_Holo_Light_Dialog_MinWidth,mDatasetListener,year,month,day);
+                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                dialog.getDatePicker().setMaxDate(calendar2.getTimeInMillis());
+                dialog.show();
             }
         });
-        final java.util.Calendar calendar = java.util.Calendar.getInstance();
+        mDatasetListener = new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                DateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+                String currentTime = sdf.format(calendar.getTime());
+                calendar.set(Calendar.YEAR,year);
+                calendar.set(Calendar.MONTH,month);
+                calendar.set(Calendar.DAY_OF_MONTH,dayOfMonth);
+                lastdat=(month+1) + "/"+dayOfMonth+"/"+year+" "+currentTime;
+                String date=dayOfMonth+"/"+(month+1) + "/"+year;
+                lastdonationdate.setText(date);
+            }
+        };
+
         birthdate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                        calendar.set(Calendar.YEAR, year);
-                        calendar.set(Calendar.MONTH, month);
-                        calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-                        birthdate.setText(dayOfMonth+"/"+(month+1)+"/"+year);
-                    }
-                };
-                new DatePickerDialog(EditProfileActivity.this, date, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show();
+                int year=calendar1.get(Calendar.YEAR);
+                int month=calendar1.get(Calendar.MONTH);
+                int day=calendar1.get(Calendar.DAY_OF_MONTH);
+                DatePickerDialog dialog=new DatePickerDialog(EditProfileActivity.this,android.R.style.Theme_Holo_Light_Dialog_MinWidth,bDatasetListener,year,month,day);
+                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                dialog.getDatePicker().setMaxDate(calendar2.getTimeInMillis());
+                dialog.show();
             }
         });
+        bDatasetListener = new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                calendar1.set(Calendar.YEAR,year);
+                calendar1.set(Calendar.MONTH,month);
+                calendar1.set(Calendar.DAY_OF_MONTH,dayOfMonth);
+                String date=dayOfMonth+"/"+(month+1) + "/"+year;
+                birthdate.setText(date);
+            }
+        };
 
     }
 
@@ -196,7 +248,7 @@ public class EditProfileActivity extends AppCompatActivity {
                         reference.child(d.getKey()).setValue(genderSp);
                     }
                     if (d.getKey().equals("Last donation date")){
-                        reference.child(d.getKey()).setValue(lastdonationdate.getText().toString());
+                        reference.child(d.getKey()).setValue(lastdat);
                     }
                 }
 
