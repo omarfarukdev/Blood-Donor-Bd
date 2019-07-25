@@ -26,7 +26,8 @@ public class HospitalActivity extends AppCompatActivity {
     private ListView hospitallist;
     DatabaseReference reference;
     ArrayList<BloodBankInfo> hospiList;
-    String city;
+    String [] city1;
+    String city,cityname,citypostcode;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,6 +46,15 @@ public class HospitalActivity extends AppCompatActivity {
         });
         hospiList=new ArrayList<>();
         city = getIntent().getStringExtra("city");
+        try{
+            city1=city.split(" ");
+            cityname=city1[1];
+            citypostcode=city1[2];
+        }
+        catch (Exception e)
+        {
+
+        }
         final HospitalListAdapters hospitalListAdapters=new HospitalListAdapters(this,0,hospiList);
         reference= FirebaseDatabase.getInstance().getReference().child("Hospital");
         reference.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -52,7 +62,7 @@ public class HospitalActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for(DataSnapshot d:dataSnapshot.getChildren())
                     try{
-                        if(d.child("City").getValue().toString().equals(city.trim())){
+                        if(d.child("City").getValue().toString().equals(cityname.trim())){
                             Log.d("MMMM",""+d.child("PhoneNo").getValue().toString());
                             BloodBankInfo bloodBankInfo=new BloodBankInfo(d.child("Name").getValue().toString(),d.child("PhoneNo").getValue().toString(),d.child("Address").getValue().toString());
                             hospiList.add(bloodBankInfo);
