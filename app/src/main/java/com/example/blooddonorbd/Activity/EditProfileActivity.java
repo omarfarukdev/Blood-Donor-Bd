@@ -1,4 +1,4 @@
-package com.example.blooddonorbd;
+package com.example.blooddonorbd.Activity;
 
 import android.app.DatePickerDialog;
 import android.graphics.Color;
@@ -17,6 +17,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 
+import com.example.blooddonorbd.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -55,7 +56,7 @@ public class EditProfileActivity extends AppCompatActivity {
         bloodgroupsp=findViewById(R.id.bloodGroup);
         gendersp=findViewById(R.id.gender);
 
-        ArrayAdapter<String> adapter_option=new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item,getResources().getStringArray(R.array.bloodgroup));
+        ArrayAdapter<String> adapter_option=new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item,getResources().getStringArray(R.array.bloodgroupOnEdit));
         adapter_option.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         bloodgroupsp.setAdapter(adapter_option);
         bloodgroupsp.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {

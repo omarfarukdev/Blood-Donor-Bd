@@ -2,7 +2,6 @@ package com.example.blooddonorbd.Fragments;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -12,8 +11,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -24,11 +21,11 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.blooddonorbd.DiscoverableActivity;
-import com.example.blooddonorbd.EditProfileActivity;
-import com.example.blooddonorbd.HomeActivity;
+import com.example.blooddonorbd.Activity.DiscoverableActivity;
+import com.example.blooddonorbd.Activity.HomeActivity;
 import com.example.blooddonorbd.Models.UserInformation;
 import com.example.blooddonorbd.R;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -46,8 +43,6 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -215,45 +210,18 @@ public class SetupPersonalInfoFragment extends Fragment {
         }
         if(dateOfBt == 0){
             dateOfBirth.setError("Enter your date of birth.");
+
         }
         if (currentHomeAddressEt.getText().length() == 0){
             dateOfBirth.setError("Enter your current home address.");
+            Toast.makeText(getActivity(), ""+currentHomeAddressEt.getText().length(), Toast.LENGTH_SHORT).show();
+        }
+        if (bloodGroup.getSelectedItem().toString().equals("Select blood group")){
+            TextView textView = (TextView) bloodGroup.getSelectedView();
+            textView.setError("You need to select a value!");
         }
         else if(fName!=0 && dateOfBt!=0 && currentHomeAddressEt.getText().length() != 0){
             final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            builder.setMessage("Your blood group is "+bloodGroup.getSelectedItem().toString()+" . Are you sure with that ?");
-            builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                   /* DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("User").child(FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber());//current user database reference
-                    databaseReference.child("Full Name").setValue(fullName.getText().toString());
-                    databaseReference.child("Blood Group").setValue(bloodGroup.getSelectedItem().toString());
-                    databaseReference.child("Date of birth").setValue(dateOfBirth.getText().toString());
-                    databaseReference.child("Gender").setValue(gender.getSelectedItem().toString());
-                    databaseReference.child("Last donation date").setValue(lastDonationDate.getText().toString());*/
-
-                    /*Intent intent = new Intent(getActivity(), CurrentLocationSetupActivity.class);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    getActivity().finish();
-                    startActivity(intent);*/
-                    /*fragment[0] = new SetupHomeAddressFragment();
-                    FragmentManager fragmentManager = getFragmentManager();
-                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-
-                    Fragment fragment1 = fragmentManager.findFragmentById(R.id.fragment);
-                    //passing data via fragment
-                    Bundle bundle=new Bundle();
-                    bundle.putString("fName",fullName.getText().toString());
-                    bundle.putString("BloodGroup",bloodGroup.getSelectedItem().toString());
-                    bundle.putString("dateOfBirth",dateOfBirth.getText().toString());
-                    bundle.putString("gender",gender.getSelectedItem().toString());
-                    bundle.putString("lastDonationDate",lastDonationDate.getText().toString());
-
-                    fragmentTransaction.remove(fragment1);
-                    fragmentTransaction.commit();
-                    fragment[0].setArguments(bundle); //data being send to SecondFragment
-                    fragmentTransaction.replace(R.id.fragment,fragment[0]);*/
-
 
                     String country = null,city = null,state = null,road = null;
                     try{
@@ -301,17 +269,7 @@ public class SetupPersonalInfoFragment extends Fragment {
                         getActivity().finish();
                         startActivity(intent);
                     }
-                }
-            });
-            builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    //Intent intent = new Intent(SetupProfileActivity.this,CurrentLocationSetupActivity.class);
-                    //startActivity(intent);
-                    dialog.dismiss();
-                }
-            });
-            builder.show();
+
         }
     }
 

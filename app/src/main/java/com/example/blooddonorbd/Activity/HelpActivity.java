@@ -1,4 +1,4 @@
-package com.example.blooddonorbd;
+package com.example.blooddonorbd.Activity;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -10,6 +10,7 @@ import android.widget.GridView;
 
 import com.example.blooddonorbd.Adapters.HelpListAdapters;
 import com.example.blooddonorbd.Models.HelpInfo;
+import com.example.blooddonorbd.R;
 
 import java.util.ArrayList;
 

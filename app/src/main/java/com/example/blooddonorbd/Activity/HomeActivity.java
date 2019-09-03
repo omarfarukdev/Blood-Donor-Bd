@@ -1,42 +1,39 @@
-package com.example.blooddonorbd;
+package com.example.blooddonorbd.Activity;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.content.BroadcastReceiver;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 
-import com.example.blooddonorbd.Models.UserInformation;
-import com.google.android.gms.common.api.GoogleApiClient;
+import com.example.blooddonorbd.Classes.ReadMessage;
+import com.example.blooddonorbd.Models.MessageInfo;
+import com.example.blooddonorbd.R;
+
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
-import android.os.Build;
-import android.os.PersistableBundle;
-import android.provider.Settings;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.blooddonorbd.Service.LocationService;
-import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
@@ -52,15 +49,12 @@ import com.google.firebase.database.ValueEventListener;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 
 public class HomeActivity extends AppCompatActivity implements LocationListener {
@@ -79,6 +73,9 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
     private DatabaseReference databaseReferenceExit;
     private long diffSeconds,diffMinutes,diffHours,diffDays;
     private long diffSecondOnLastDonation,diffMinutesOnLastDonation,diffHoursOnLastDonation,diffDaysOnLastDonation;
+    private String lastMessage,recever,isSeen;
+    private int messageCount = 0;
+    private TextView notificationBadgeTv;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,11 +86,12 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
         donotNumberTv = findViewById(R.id.donorNumberTv);
         bloodGroupSpinner = findViewById(R.id.bloodgroupSpHome);
         userimage=findViewById(R.id.imageView6);
+        notificationBadgeTv = findViewById(R.id.badge);
 
         Intent i = new Intent(getApplicationContext(), LocationService.class);
         startService(i);
 
-        ArrayAdapter<String> adapter_option=new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item,getResources().getStringArray(R.array.bloodgroup));
+        ArrayAdapter<String> adapter_option=new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item,getResources().getStringArray(R.array.bloodgroupOnEdit));
         adapter_option.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         bloodGroupSpinner.setAdapter(adapter_option);
         bloodGroupSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -119,6 +117,9 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
                 startActivity(intent);
             }
         });
+
+        ReadMessage readMessage = new ReadMessage(this,1);
+        readMessage.readUser();
     }
 
     @Override
@@ -303,6 +304,8 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
 
                                                 String[] deviceState = state.split(" ");
                                                 String[] deviceCity = city.split(" ");*/
+                                              //lastMessage(d.getKey());
+                                              Log.d("msggggg",d.getKey());
 
                                                 if(!d.getKey().equals(FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber())) {
                                                     userExitTime = d.child("Active time").getValue().toString();
@@ -332,23 +335,28 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
                                                         }catch (Exception e){}
 
                                                         if(diffDaysOnLastDonation >= 120 &&  (distance(latitude, longitude, dbLatitude, dbLongitude) <= 5000) ){//checking here,user last donation date was 120 days before or not
-                                                            c++;
-                                                            //Toast.makeText(HomeActivity.this, "uuu"+diffDaysOnLastDonation, Toast.LENGTH_SHORT).show();
+                                                           c++;
+                                                            //Log.d("iiiiii",d.child("Full name").getValue().toString());
+                                                            //Toast.makeText(HomeActivity.this, "uuu"+d.child("Full Name").getValue().toString(), Toast.LENGTH_SHORT).show();
 
                                                         }
 
-                                                    } else if ((distance(latitude, longitude, homeAddressLat, homeAddressLong) <= 5000)){
-                                                        ArrayList<Long> lastDonationDateList;
-                                                        try{
-                                                            lastDonationDateList = dateDifference(lastDonationDate,currentDateandTime);
-                                                            diffDaysOnLastDonation = lastDonationDateList.get(3);
-                                                            diffHoursOnLastDonation = lastDonationDateList.get(2);
-                                                            diffMinutesOnLastDonation = lastDonationDateList.get(1);
-                                                        }catch (Exception e){}
-                                                    if(diffDaysOnLastDonation >=120) {
-                                                        c++;
+                                                    } else {
+                                                        if ((distance(latitude, longitude, homeAddressLat, homeAddressLong) <= 5000)){
+                                                            ArrayList<Long> lastDonationDateList;
+                                                            try{
+                                                                lastDonationDateList = dateDifference(lastDonationDate,currentDateandTime);
+                                                                diffDaysOnLastDonation = lastDonationDateList.get(3);
+                                                                diffHoursOnLastDonation = lastDonationDateList.get(2);
+                                                                diffMinutesOnLastDonation = lastDonationDateList.get(1);
+                                                            }catch (Exception e){}
+                                                            if(diffDaysOnLastDonation >=120) {
+                                                               c++;
+                                                                //Toast.makeText(HomeActivity.this, "ttt"+diffDaysOnLastDonation, Toast.LENGTH_SHORT).show();
+                                                                //Log.d("tttttt",d.child("Full name").getValue().toString());
+                                                            }
+                                                        }
                                                     }
-                                                }
                                                 }
 
                                             }catch (Exception e){
@@ -468,10 +476,50 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
         //service started here
     }
 
+    private void exitDialog(){
+        final Dialog exitDialog = new Dialog(HomeActivity.this);
+        exitDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        //exitDialog.setCancelable(false);
+
+        exitDialog.setContentView(R.layout.exit_logout_dialog);
+
+        try{
+            databaseReferenceExit = FirebaseDatabase.getInstance().getReference().child("User").child(FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber());
+        }catch (Exception e){}
+
+        Button dialogButton = (Button) exitDialog.findViewById(R.id.dilog_yesBt);
+        ImageButton cancelIm = exitDialog.findViewById(R.id.cancelImageButton);
+        TextView textView = exitDialog.findViewById(R.id.dialogTitle);
+        TextView textView1 = exitDialog.findViewById(R.id.desText_dialog);
+        textView.setText("Exit!");
+        textView1.setText("Do you really want to exit ?");
+        dialogButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Calendar cal = Calendar.getInstance();
+                DateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+                String currentDateandTime = sdf.format(cal.getTime());
+                databaseReferenceExit.child("Active time").setValue(currentDateandTime);
+                Intent myService = new Intent(HomeActivity.this, LocationService.class);
+                stopService(myService);
+                finish();
+                exitDialog.dismiss();
+            }
+        });
+        cancelIm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                exitDialog.dismiss();
+            }
+        });
+
+        exitDialog.show();
+    }
+
     @Override
     public void onBackPressed() {
         //super.onBackPressed();
-        try{
+        /*try{
             databaseReferenceExit = FirebaseDatabase.getInstance().getReference().child("User").child(FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber());
         }catch (Exception e){}
 
@@ -484,6 +532,8 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
                 DateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
                 String currentDateandTime = sdf.format(cal.getTime());
                 databaseReferenceExit.child("Active time").setValue(currentDateandTime);
+                Intent myService = new Intent(HomeActivity.this, LocationService.class);
+                stopService(myService);
                 finish();
             }
         });
@@ -493,6 +543,7 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
                 dialog.dismiss();
             }
         });
-        dialog.show();
+        dialog.show();*/
+        exitDialog();
     }
 }

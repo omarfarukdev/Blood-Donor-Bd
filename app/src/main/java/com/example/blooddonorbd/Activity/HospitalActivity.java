@@ -1,19 +1,18 @@
-package com.example.blooddonorbd;
+package com.example.blooddonorbd.Activity;
 
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.text.Html;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.widget.ListView;
 
-import com.example.blooddonorbd.Adapters.BloodOrganizationListAdaptrs;
+import com.example.blooddonorbd.Adapters.HospitalListAdapters;
 import com.example.blooddonorbd.Models.BloodBankInfo;
-import com.example.blooddonorbd.Models.BloodOrganizationInfo;
+import com.example.blooddonorbd.R;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -22,21 +21,21 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
-public class BloodOrganizationActivity extends AppCompatActivity {
+public class HospitalActivity extends AppCompatActivity {
 
-   private Toolbar toolbar;
-   private ListView bloodorga;
-   private String city,cityname,citypostcode;
-   private ArrayList<BloodOrganizationInfo> bloodorgalist;
-   private DatabaseReference reference;
+    Toolbar toolbar;
+    private ListView hospitallist;
+    DatabaseReference reference;
+    ArrayList<BloodBankInfo> hospiList;
     String [] city1;
+    String city,cityname,citypostcode;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_blood_organization);
-        toolbar= findViewById(R.id.toolbar);
-        bloodorga=findViewById(R.id.bloodorganization);
-        toolbar.setTitle("Blood organization");
+        setContentView(R.layout.activity_hospital);
+        hospitallist=findViewById(R.id.hospitallist);
+        toolbar=findViewById(R.id.toolbar);
+        toolbar.setTitle("Hospital");
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -46,8 +45,7 @@ public class BloodOrganizationActivity extends AppCompatActivity {
                 finish();
             }
         });
-
-        bloodorgalist=new ArrayList<>();
+        hospiList=new ArrayList<>();
         city = getIntent().getStringExtra("city");
         try{
             city1=city.split(" ");
@@ -58,25 +56,26 @@ public class BloodOrganizationActivity extends AppCompatActivity {
         {
 
         }
-        final BloodOrganizationListAdaptrs bloodOrganizationListAdaptrs=new BloodOrganizationListAdaptrs(this,0,bloodorgalist);
-        reference= FirebaseDatabase.getInstance().getReference().child("Blood Organization");
+        final HospitalListAdapters hospitalListAdapters=new HospitalListAdapters(this,0,hospiList);
+        reference= FirebaseDatabase.getInstance().getReference().child("Hospital");
         reference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for(DataSnapshot d:dataSnapshot.getChildren())
-                try{
-                    if(d.child("City").getValue().toString().equals(cityname.trim())){
-                        Log.d("MMMM",""+d.child("Phone").getValue().toString());
-                        BloodOrganizationInfo bloodOrganizationInfo=new BloodOrganizationInfo(d.child("Name").getValue().toString(),d.child("Phone").getValue().toString());
-                        bloodorgalist.add(bloodOrganizationInfo);
-                        bloodorga.setAdapter(bloodOrganizationListAdaptrs);
-                        bloodOrganizationListAdaptrs.notifyDataSetChanged();
+                    try{
+                        if(d.child("City").getValue().toString().equals(cityname.trim())){
+                            Log.d("MMMM",""+d.child("PhoneNo").getValue().toString());
+                            BloodBankInfo bloodBankInfo=new BloodBankInfo(d.child("Name").getValue().toString(),d.child("PhoneNo").getValue().toString(),d.child("Address").getValue().toString());
+                            hospiList.add(bloodBankInfo);
+                            hospitallist.setAdapter(hospitalListAdapters);
+                            hospitalListAdapters.notifyDataSetChanged();
+                        }
                     }
-                }
-                catch (Exception e){
+                    catch (Exception e){
 
-                }
+                    }
             }
+
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {

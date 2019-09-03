@@ -1,4 +1,4 @@
-package com.example.blooddonorbd;
+package com.example.blooddonorbd.Activity;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
@@ -26,6 +26,7 @@ import android.widget.Toast;
 
 import com.example.blooddonorbd.Fragments.SetupPersonalInfoFragment;
 import com.example.blooddonorbd.Models.UserInformation;
+import com.example.blooddonorbd.R;
 import com.google.android.gms.common.api.GoogleApiClient;
 
 import com.google.android.gms.common.api.Status;

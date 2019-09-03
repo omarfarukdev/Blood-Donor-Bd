@@ -1,4 +1,4 @@
-package com.example.blooddonorbd;
+package com.example.blooddonorbd.Activity;
 
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -10,17 +10,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.blooddonorbd.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseException;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
 import com.google.firebase.database.DataSnapshot;
@@ -53,7 +52,8 @@ public class PhoneNumberConfirmationActivity extends AppCompatActivity {
 
         phoneNumberTv = findViewById(R.id.textView3);
         detailsPhnNumTv = findViewById(R.id.textView4);
-        progressDialog = new ProgressDialog(this);
+
+        progressDialog = new ProgressDialog(this,R.style.AppCompatAlertDialogStyle);
         progressDialog.setMessage("Please wait");
 
         String phoneNumber = getIntent().getStringExtra("phoneNumber");
@@ -102,8 +102,9 @@ public class PhoneNumberConfirmationActivity extends AppCompatActivity {
                 this,
                 mCallback
         );
-        progressBar = new ProgressDialog(this);
+        progressBar = new ProgressDialog(this,R.style.AppCompatAlertDialogStyle);
         progressBar.setMessage("Sending verification code");
+
         progressBar.show();
     }
 

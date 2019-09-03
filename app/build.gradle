@@ -61,7 +61,6 @@ dependencies {
     //place autocomplete librery
     implementation 'com.seatgeek:placesautocomplete:0.3-SNAPSHOT'
 
-
 }
 apply plugin: 'com.google.gms.google-services'
 com.google.gms.googleservices.GoogleServicesPlugin.config.disableVersionCheck = true

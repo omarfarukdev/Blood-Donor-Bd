@@ -1,4 +1,4 @@
-package com.example.blooddonorbd;
+package com.example.blooddonorbd.Activity;
 
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.ListView;
 
 import com.example.blooddonorbd.Adapters.EmergencyCallListAdapters;
+import com.example.blooddonorbd.R;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
