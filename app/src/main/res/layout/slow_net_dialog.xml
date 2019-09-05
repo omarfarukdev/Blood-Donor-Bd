@@ -54,7 +54,7 @@
                     android:layout_marginBottom="8dp"
                     android:gravity="center"
                     android:scaleType="fitCenter"
-                    android:src="@drawable/error"
+                    android:src="@drawable/error1"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"

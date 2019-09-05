@@ -34,11 +34,18 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.blooddonorbd.Service.LocationService;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.android.libraries.places.widget.Autocomplete;
+import com.google.android.libraries.places.widget.AutocompleteActivity;
+import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -50,6 +57,7 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -75,7 +83,9 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
     private long diffSecondOnLastDonation,diffMinutesOnLastDonation,diffHoursOnLastDonation,diffDaysOnLastDonation;
     private String lastMessage,recever,isSeen;
     private int messageCount = 0;
-    private TextView notificationBadgeTv;
+    private TextView notificationBadgeTv,locationTittleTv;
+    private String searchPlaceNamee;
+    private double searchLatitude,searchLongitude;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,6 +97,7 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
         bloodGroupSpinner = findViewById(R.id.bloodgroupSpHome);
         userimage=findViewById(R.id.imageView6);
         notificationBadgeTv = findViewById(R.id.badge);
+        locationTittleTv = findViewById(R.id.textView15);
 
         Intent i = new Intent(getApplicationContext(), LocationService.class);
         startService(i);
@@ -206,13 +217,25 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
                             List<Address> addresses;
                             ArrayList<String> addressList = new ArrayList<>();
                             try {
-                                addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
-                                Address obj = addresses.get(0);
+                                /*if (fullAddress == null){//for custom search*/
+                                    addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+                                    Address obj = addresses.get(0);
 
-                                fullAddress = obj.getAddressLine(0);
+                                    fullAddress = obj.getAddressLine(0);
 
-                                latitude = location.getLatitude();
-                                longitude = location.getLongitude();
+                                    latitude = location.getLatitude();
+                                    longitude = location.getLongitude();
+
+                                    //Toast.makeText(HomeActivity.this, "iffff"+latitude+" "+longitude, Toast.LENGTH_SHORT).show();
+                                /*}
+                                else {
+
+                                    latitude = searchLatitude;
+                                    longitude = searchLongitude;
+
+                                    Toast.makeText(HomeActivity.this, ""+latitude+" "+longitude, Toast.LENGTH_SHORT).show();
+                                    locationTittleTv.setText("Custom search location");
+                                }*/
 
                                 String[] sp = fullAddress.split(",");
 
@@ -546,4 +569,58 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
         dialog.show();*/
         exitDialog();
     }
+
+    /*public void searchIm(View view) {
+        Places.initialize(this.getApplicationContext(), "AIzaSyDPci6XtzK5LMbXvILYVQNj8CPI7qUArdg");
+
+        // Create a new Places client instance.
+        PlacesClient placesClient = Places.createClient(this);
+
+        *//**
+         * Initialize Places. For simplicity, the API key is hard-coded. In a production
+         * environment we recommend using a secure mechanism to manage API keys.
+         *//*
+        if (!Places.isInitialized()) {
+            Places.initialize(this.getApplicationContext(), "AIzaSyDPci6XtzK5LMbXvILYVQNj8CPI7qUArdg");
+        }
+
+        List<Place.Field> fields = Arrays.asList(Place.Field.ADDRESS, Place.Field.LAT_LNG);
+        //TypeFilter typeFilter = new TypeFilter();
+        //typeFilter.setFilter(typeFilter);
+        // Start the autocomplete intent.
+        Intent intent = new Autocomplete.IntentBuilder(AutocompleteActivityMode.FULLSCREEN, fields).setCountry("Bd").build(HomeActivity.this);
+        startActivityForResult(intent, 10);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 10) {
+            if (resultCode == RESULT_OK) {
+                Place place = Autocomplete.getPlaceFromIntent(data);
+
+               *//* searchLocation = place.getAddress();
+                String s[] = splitString(searchLocation);
+                //for (String st:s){
+                if (s.length == 2){
+                    city = s[s.length-2];
+                }*//*
+                // else if (s.length.)
+                //}
+                //Toast.makeText(this, ""+place.getLatLng(), Toast.LENGTH_LONG).show();
+                fullAddress = place.getAddress();
+                searchPlaceNamee = place.getName();
+                searchLatitude = place.getLatLng().latitude;
+                searchLongitude = place.getLatLng().longitude;
+                //currentLocationTv.setText(fullAddress);
+                getLocation();
+
+               // customSearch(searchLocation,place.getName());
+            } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
+                // TODO: Handle the error.
+                Status status = Autocomplete.getStatusFromIntent(data);
+            } else if (resultCode == RESULT_CANCELED) {
+                // The user canceled the operation.
+            }
+        }
+    }*/
 }

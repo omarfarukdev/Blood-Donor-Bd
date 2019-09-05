@@ -51,9 +51,12 @@ public class BloodOrganizationActivity extends AppCompatActivity {
         bloodorgalist=new ArrayList<>();
         city = getIntent().getStringExtra("city");
         try{
-            city1=city.split(" ");
-            cityname=city1[1];
-            citypostcode=city1[2];
+            try {
+                cityname=city1[1];
+            }catch (Exception e){}
+            try {
+                citypostcode=city1[2];
+            }catch (Exception e){}
         }
         catch (Exception e)
         {
