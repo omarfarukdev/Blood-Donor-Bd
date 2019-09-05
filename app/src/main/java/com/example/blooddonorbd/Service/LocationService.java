@@ -4,7 +4,6 @@ import android.Manifest;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
@@ -14,21 +13,17 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.os.PowerManager;
-import android.provider.Settings;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AlertDialog;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -42,15 +37,11 @@ import java.util.Locale;
 
 public class LocationService extends Service implements LocationListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
     private GoogleApiClient mGoogleApiClient;
-    private Location mLocation;
+    private FusedLocationProviderClient mLocation;
     private LocationManager mLocationManager;
     private LocationRequest mLocationRequest;
     private long UPDATE_INTERVAL = 5 * 1000;  /* 10 secs */
     private long FASTEST_INTERVAL = 2000; /* 2 sec */
-
-
-
-    //final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("User").child(FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber());
     @Override
     public IBinder onBind(Intent intent) {
@@ -94,10 +85,25 @@ public class LocationService extends Service implements LocationListener, Google
 
         startLocationUpdates();
 
-        mLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+        mLocation = LocationServices.getFusedLocationProviderClient(this);
+
+        mLocation.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
+            @Override
+            public void onSuccess(Location location) {
+                if (location==null){
+                    startLocationUpdates();
+                }
+                if (location!=null){
+
+                }else {
+                    Toast.makeText(getApplicationContext(), "Location not Detected", Toast.LENGTH_SHORT).show();
+                    //onCreate();
+                }
+            }
+        });
 
         //Toast.makeText(this, "" + mLocation, Toast.LENGTH_SHORT).show();
-        if (mLocation == null) {
+       /* if (mLocation == null) {
             startLocationUpdates();
         }
         if (mLocation != null) {
@@ -106,7 +112,7 @@ public class LocationService extends Service implements LocationListener, Google
             // mLongitudeTextView.setText(String.valueOf(mLocation.getLongitude()));
         } else {
             Toast.makeText(this, "Location not Detected", Toast.LENGTH_SHORT).show();
-        }
+        }*/
     }
 
     @Override
@@ -206,45 +212,10 @@ public class LocationService extends Service implements LocationListener, Google
                 }
             }
 
-
-
-            //Toast.makeText(this,"Tvr "+addressList.get(addressList.size()-1), Toast.LENGTH_SHORT).show();
-           // mLongitudeTextView.setText("latitude = " + obj.getAddressLine(0));
-           // mLatitudeTextView.setText(stringBuilder.toString());
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-
-
-   /* private void showAlert() {
-        final android.support.v7.app.AlertDialog.Builder dialog = new AlertDialog.Builder(this);
-        *//*dialog.setTitle("Enable Location")
-                .setMessage("Your Locations Settings is set to 'Off'.\nPlease Enable Location to " +
-                        "use this app")
-                .setPositiveButton("Location Settings", new DialogInterface.OnClickListener().OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface paramDialogInterface, int paramInt) {
-
-                        Intent myIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                        startActivity(myIntent);
-                    }
-                })
-                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface paramDialogInterface, int paramInt) {
-
-                    }
-                });*//*
-        dialog.setPositiveButton("Location settings", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                Intent myIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                startActivity(myIntent);
-            }
-        });
-        dialog.show();
-    }*/
 
     BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override

@@ -1,4 +1,4 @@
-package com.example.blooddonorbd;
+package com.example.blooddonorbd.Activity;
 
 import android.content.Intent;
 import android.location.Location;
@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.example.blooddonorbd.Adapters.UserListAdapters;
 import com.example.blooddonorbd.Models.UserInformation;
+import com.example.blooddonorbd.R;
 import com.google.android.gms.common.api.Status;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
@@ -291,9 +292,13 @@ public class ResultActivity extends AppCompatActivity {
                                diffHours = exitTimeDifList.get(2);
                                diffMinutes = exitTimeDifList.get(1);
                            }catch (Exception e){}
+                           long dD=diffDays;
+                           long dH=diffHours;
+                           long dM=diffMinutes;
 
-                           if ((d.child("Location").getValue().toString().equals("On") && diffDays ==0 && diffHours ==0 && diffMinutes<=30) ||
-                                   (d.child("Location").getValue().toString().equals("Off") && diffDays ==0 && diffHours ==0 && diffMinutes<=30)){
+
+                           if ((d.child("Location").getValue().toString().equals("On") && (dD ==0 && dH ==0 && dM<=30)) ||
+                                   (d.child("Location").getValue().toString().equals("Off") && (dD ==0 && dH ==0 && dM<=30))){
                                if (d.child("Blood Group").getValue().equals(bloodGroup)){
                                    ArrayList<Long> lastDonationDateList;
                                    try{
@@ -304,6 +309,7 @@ public class ResultActivity extends AppCompatActivity {
                                    }catch (Exception e){}
 
                                    if (diffDaysOnLastDonation>=120){
+                                      // Toast.makeText(ResultActivity.this, ""+d.child("Full Name").getValue().toString()+" "+dM+" "+dH+" "+dD+" "+distance(latitude,longitude,dbLatitude,dbLongitude), Toast.LENGTH_SHORT).show();
                                        if (splitString2(fullAddress) == 1 && d.child("Country").getValue().toString().trim().equals(fullAddress.trim())){//search like "Bangladesh"
                                            fName = d.child("Full Name").getValue().toString();
                                            address = d.child("Full address").getValue().toString();
@@ -334,10 +340,12 @@ public class ResultActivity extends AppCompatActivity {
                                            c++;
                                           // pgsBar.setVisibility(View.GONE);
                                        }
-                                       else if ((splitString2(fullAddress) > 2 &&
-                                               (checkCity(cityList,deviceCity) == true)) || (splitString2(fullAddress) > 2 && (checkState(stateList,deviceState) == true) &&//search like "Khilkhet,Dhaka,Bangladesh"
-                                               (checkCity(cityList,deviceCity) == true) && checkCity(roadList,deviceRoad))){
-                                           if (distance(dbLatitude,dbLongitude,latitude,longitude) <= 5000){//finding user around 5 miles
+                                       else if ((splitString2(fullAddress) > 2
+                                              /* (checkCity(cityList,deviceCity) == true)) || (splitString2(fullAddress) > 2 && (checkState(stateList,deviceState) == true) &&//search like "Khilkhet,Dhaka,Bangladesh"
+                                               (checkCity(cityList,deviceCity) == true) && checkCity(roadList,deviceRoad)*/)){
+                                           if (distance(latitude,longitude,dbLatitude,dbLongitude) <= 5000){//finding user around 5 miles
+                                               //Toast.makeText(ResultActivity.this, ""+d.child("Full Name").getValue().toString()+" "+dM+" "+dH+" "+dD+" "+distance(latitude,longitude,dbLatitude,dbLongitude), Toast.LENGTH_SHORT).show();
+
                                                fName = d.child("Full Name").getValue().toString();
                                                address = d.child("Full address").getValue().toString();
                                                dateOfBirth = d.child("Date of birth").getValue().toString();
@@ -396,10 +404,10 @@ public class ResultActivity extends AppCompatActivity {
                                            c++;
                                            //pgsBar.setVisibility(View.GONE);
                                        }
-                                       else if ((splitString2(fullAddress) > 2 &&
-                                               (checkCity(cityList,deviceCity) == true)) || (splitString2(fullAddress) > 2 && (checkState(stateList,deviceState) == true) &&//search like "Khilkhet,Dhaka,Bangladesh"
-                                               (checkCity(cityList,deviceCity) == true) && checkCity(roadList,deviceRoad))){
-                                           if (distance(homeAddressLat,homeAddressLong,latitude,longitude) <= 5000){//finding user around 5 miles
+                                       else if ((splitString2(fullAddress) > 2
+                                               /*(checkCity(cityList,deviceCity) == true)) || (splitString2(fullAddress) > 2 && (checkState(stateList,deviceState) == true) &&//search like "Khilkhet,Dhaka,Bangladesh"
+                                               (checkCity(cityList,deviceCity) == true) && checkCity(roadList,deviceRoad)*/)){
+                                           if (distance(latitude,longitude,homeAddressLat,homeAddressLong) <= 5000){//finding user around 5 miles
                                                fName = d.child("Full Name").getValue().toString();
                                                address = d.child("Current Location").getValue().toString();
                                                dateOfBirth = d.child("Date of birth").getValue().toString();

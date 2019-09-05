@@ -1,12 +1,10 @@
-package com.example.blooddonorbd;
+package com.example.blooddonorbd.Activity;
 
-import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -18,6 +16,7 @@ import android.widget.Toast;
 
 import com.example.blooddonorbd.Adapters.MessageListAdapters;
 import com.example.blooddonorbd.Models.MessageInfo;
+import com.example.blooddonorbd.R;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
@@ -31,7 +30,6 @@ import com.google.firebase.iid.InstanceIdResult;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -79,6 +77,7 @@ public class ChatActivity extends AppCompatActivity {
         }*/
        nameList = new ArrayList<>();
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("User").child(recivernumber);
+        databaseReference.keepSynced(true);
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -97,6 +96,8 @@ public class ChatActivity extends AppCompatActivity {
         });
 
         DatabaseReference databaseReference1 = FirebaseDatabase.getInstance().getReference().child("User").child(FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber());
+        databaseReference1.keepSynced(true);
+
         databaseReference1.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -148,6 +149,8 @@ public class ChatActivity extends AppCompatActivity {
     private void setup(){
         try{
             final DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("Chat");
+            databaseReference.keepSynced(true);
+
             databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -195,6 +198,7 @@ public class ChatActivity extends AppCompatActivity {
     private void checkingRef(final DatabaseReference databaseReference2, final DataSnapshot d,int childrenCount) {
         //Log.d("check", d.getKey());
         //int funcCallCount;
+        databaseReference2.keepSynced(true);
 
         databaseReference2.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -248,6 +252,7 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void checkingRefForReadingMessage(DatabaseReference databaseReference2, final DataSnapshot d) {
+        databaseReference2.keepSynced(true);
 
         databaseReference2.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -278,6 +283,8 @@ public class ChatActivity extends AppCompatActivity {
     public void readMessage(final String chatKey) {
         final int temp = c;
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("Chat").child(chatKey);
+        databaseReference.keepSynced(true);
+
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -338,12 +345,13 @@ public class ChatActivity extends AppCompatActivity {
             editmessage.setText("");
             setup();
 
-            cc++;
+            //cc++;
         }
 
     }
 private void conversation(DatabaseReference databaseReference){
    // Log.d("msg","1");
+    databaseReference.keepSynced(true);
         databaseReference.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
@@ -421,7 +429,7 @@ private void conversation(DatabaseReference databaseReference){
 
             @Override
             public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
+//
             }
 
             @Override

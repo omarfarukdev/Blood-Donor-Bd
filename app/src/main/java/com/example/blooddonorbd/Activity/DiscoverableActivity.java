@@ -1,4 +1,4 @@
-package com.example.blooddonorbd;
+package com.example.blooddonorbd.Activity;
 
 import android.Manifest;
 import android.content.Context;
@@ -13,9 +13,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.Switch;
-import android.widget.Toast;
 
-import com.google.firebase.auth.FirebaseAuth;
+import com.example.blooddonorbd.R;
 
 public class DiscoverableActivity extends AppCompatActivity {
     Switch locationSw;

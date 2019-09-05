@@ -1,9 +1,11 @@
-package com.example.blooddonorbd;
+package com.example.blooddonorbd.Activity;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+
+import com.example.blooddonorbd.R;
 
 public class StartActivity extends AppCompatActivity {
 

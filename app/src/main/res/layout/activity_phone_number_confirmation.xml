@@ -6,7 +6,8 @@
     android:layout_width="match_parent"
     android:padding="10dp"
     android:layout_height="match_parent"
-    android:id="@+id/phoneNumberConfActivity">
+    android:id="@+id/phoneNumberConfActivity"
+    android:theme="@style/EditTextColor">
 
     <TextView
         android:id="@+id/textView3"
@@ -62,12 +63,14 @@
         android:layout_marginBottom="8dp"
         android:gravity="center"
         android:hint="6 digit code"
+        android:inputType="number"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView4"
-        app:layout_constraintVertical_bias="0.059" />
+        app:layout_constraintVertical_bias="0.059"
+        android:theme="@style/EditTextColor"/>
 
     <Button
         android:onClick="nextBtOnPhoneVerifyActivity"

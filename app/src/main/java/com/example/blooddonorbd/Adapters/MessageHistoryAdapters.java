@@ -6,16 +6,12 @@ import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.example.blooddonorbd.ChatActivity;
+import com.example.blooddonorbd.Activity.ChatActivity;
 import com.example.blooddonorbd.Models.MessageHistoryInfo;
 import com.example.blooddonorbd.Models.MessageInfo;
 import com.example.blooddonorbd.R;
@@ -27,7 +23,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class MessageHistoryAdapters extends RecyclerView.Adapter<MessageHistoryAdapters.ViewHolder> {
     int c = 0;
@@ -162,7 +157,6 @@ public class MessageHistoryAdapters extends RecyclerView.Adapter<MessageHistoryA
                        }
                    }catch (Exception e){}
                 }
-               // Log.d("messageee", lastMessage);
                 try{
                     if (recever.equals(FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber()) && isSeen.equals("false")){
                         name.setText(nameValue);

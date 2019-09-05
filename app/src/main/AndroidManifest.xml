@@ -7,6 +7,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 
 
 
@@ -17,31 +18,31 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
-        <activity android:name=".HospitalActivity"></activity>
-        <activity android:name=".EmergencyCallActivity" />
-        <activity android:name=".BloodOrganizationActivity" />
-        <activity android:name=".BloodBankActivity" />
-        <activity android:name=".AmbulanceActivity" />
-        <activity android:name=".HelpActivity" />
-        <activity android:name=".SettingActivity" />
-        <activity android:name=".ChatActivity">
+        <activity android:name=".Activity.HospitalActivity"></activity>
+        <activity android:name=".Activity.EmergencyCallActivity" />
+        <activity android:name=".Activity.BloodOrganizationActivity" />
+        <activity android:name=".Activity.BloodBankActivity" />
+        <activity android:name=".Activity.AmbulanceActivity" />
+        <activity android:name=".Activity.HelpActivity" />
+        <activity android:name=".Activity.SettingActivity" />
+        <activity android:name=".Activity.ChatActivity">
             <intent-filter>
                 <action android:name="chatNotification"></action>
                 <category android:name="android.intent.category.DEFAULT"></category>
             </intent-filter>
         </activity>
-        <activity android:name=".MessagesActivity" />
-        <activity android:name=".ResultActivity" />
-        <activity android:name=".ResultDetails" />
-        <activity android:name=".HomeActivity" />
-        <activity android:name=".EditProfileActivity" />
-        <activity android:name=".ProfileActivity" />
-        <activity android:name=".SetupProfileActivity" />
-        <activity android:name=".DiscoverableActivity" />
-        <activity android:name=".StartActivity" />
-        <activity android:name=".PhoneNumberConfirmationActivity" />
-        <activity android:name=".VerifyPhoneNumberActivity" />
-        <activity android:name=".SplashActivity">
+        <activity android:name=".Activity.MessagesActivity" />
+        <activity android:name=".Activity.ResultActivity" />
+        <activity android:name=".Activity.ResultDetails" />
+        <activity android:name=".Activity.HomeActivity" />
+        <activity android:name=".Activity.EditProfileActivity" />
+        <activity android:name=".Activity.ProfileActivity" />
+        <activity android:name=".Activity.SetupProfileActivity" />
+        <activity android:name=".Activity.DiscoverableActivity" />
+        <activity android:name=".Activity.StartActivity" />
+        <activity android:name=".Activity.PhoneNumberConfirmationActivity" />
+        <activity android:name=".Activity.VerifyPhoneNumberActivity" />
+        <activity android:name=".Activity.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
