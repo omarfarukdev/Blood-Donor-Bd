@@ -61,14 +61,18 @@ public class BloodBankActivity extends AppCompatActivity {
         city = getIntent().getStringExtra("city");
         try{
             city1=city.split(" ");
-            cityname=city1[1];
-            citypostcode=city1[2];
+            try {
+                cityname=city1[1];
+            }catch (Exception e){}
+            try {
+                citypostcode=city1[2];
+            }catch (Exception e){}
         }
         catch (Exception e)
         {
 
         }
-        Log.d("ofar",""+cityname);
+        //Log.d("ofar",""+cityname);
 
         bloodBankListAdapters=new BloodBankListAdapters(this,0,bloodBanklist);
 

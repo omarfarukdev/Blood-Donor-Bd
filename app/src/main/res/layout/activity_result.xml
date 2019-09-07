@@ -57,7 +57,7 @@
             android:layout_marginRight="8dp"
             android:layout_marginBottom="8dp"
             android:onClick="image"
-            android:src="@drawable/search"
+            android:src="@drawable/ic_search_black_24dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"

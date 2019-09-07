@@ -72,8 +72,12 @@ public class AmbulanceActivity extends AppCompatActivity {
         ambulanceListAdapters=new AmbulanceListAdapters(this,0,amblist);
         try{
              city1=city.split(" ",3);
-             cityname=city1[1].toString();
-             citypostcode=city1[2];
+             try {
+                 cityname=city1[1];
+             }catch (Exception e){}
+             try {
+                 citypostcode=city1[2];
+             }catch (Exception e){}
         }
         catch (Exception e)
         {
