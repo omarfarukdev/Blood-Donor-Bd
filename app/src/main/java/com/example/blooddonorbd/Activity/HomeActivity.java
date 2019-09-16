@@ -10,6 +10,7 @@ import android.content.pm.PackageManager;
 
 import com.example.blooddonorbd.Classes.ReadMessage;
 import com.example.blooddonorbd.Models.MessageInfo;
+import com.example.blooddonorbd.ProfileActivity;
 import com.example.blooddonorbd.R;
 
 import android.location.Address;
@@ -123,7 +124,7 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
         userimage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent=new Intent(HomeActivity.this,ProfileActivity.class);
+                Intent intent=new Intent(HomeActivity.this, ProfileActivity.class);
                 intent.putExtra("city",currentcity );
                 startActivity(intent);
             }

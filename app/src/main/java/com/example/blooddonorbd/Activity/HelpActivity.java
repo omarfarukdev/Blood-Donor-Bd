@@ -6,8 +6,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.support.v7.widget.Toolbar;
 import android.widget.GridView;
-
 import com.example.blooddonorbd.Adapters.HelpListAdapters;
 import com.example.blooddonorbd.Models.HelpInfo;
 import com.example.blooddonorbd.R;
@@ -19,12 +19,24 @@ public class HelpActivity extends AppCompatActivity {
     GridView helplist;
     ArrayList<HelpInfo> imagrList=new ArrayList<>();
     String city;
+    Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_help);
         helplist=findViewById(R.id.gridview);
+        toolbar=findViewById(R.id.toolbar);
+        toolbar.setTitle("Help");
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
         city = getIntent().getStringExtra("city");
 
         imagrList.add(new HelpInfo("Blood Organization",R.drawable.blood));

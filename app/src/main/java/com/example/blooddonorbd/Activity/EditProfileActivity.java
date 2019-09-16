@@ -16,6 +16,7 @@ import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.support.v7.widget.Toolbar;
 
 import com.example.blooddonorbd.R;
 import com.google.firebase.auth.FirebaseAuth;
@@ -38,6 +39,7 @@ public class EditProfileActivity extends AppCompatActivity {
     String [] lastdate;
     String [] birdate;
     String [] lastdateofdonation;
+    Toolbar toolbar;
     ArrayList<String> dondate=new ArrayList<>();
     final java.util.Calendar calendar = java.util.Calendar.getInstance();
     final java.util.Calendar calendar1 = java.util.Calendar.getInstance();
@@ -55,6 +57,17 @@ public class EditProfileActivity extends AppCompatActivity {
         lastdonationdate=findViewById(R.id.lastDonationDateEt);
         bloodgroupsp=findViewById(R.id.bloodGroup);
         gendersp=findViewById(R.id.gender);
+        toolbar=findViewById(R.id.toolbar);
+        toolbar.setTitle("Edit Profile");
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
 
         ArrayAdapter<String> adapter_option=new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item,getResources().getStringArray(R.array.bloodgroupOnEdit));
         adapter_option.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -125,7 +138,7 @@ public class EditProfileActivity extends AppCompatActivity {
                          calendar.set(Calendar.YEAR,Integer.parseInt(date1[2]));
                          calendar.set(Calendar.MONTH,(Integer.parseInt(date1[0])-1));
                          calendar.set(Calendar.DAY_OF_MONTH,Integer.parseInt(date1[1]));
-                         lastdonationdate.setText(date1[1]+"/"+date1[0]+"/"+date1[2]+" "+date[1]);
+                         lastdonationdate.setText(date1[1]+"/"+date1[0]+"/"+date1[2]);
                      }
                  }
              }

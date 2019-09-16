@@ -62,6 +62,7 @@ public class BloodOrganizationActivity extends AppCompatActivity {
         {
 
         }
+        Log.d("ooo",""+cityname);
         final BloodOrganizationListAdaptrs bloodOrganizationListAdaptrs=new BloodOrganizationListAdaptrs(this,0,bloodorgalist);
         reference= FirebaseDatabase.getInstance().getReference().child("Blood Organization");
         reference.addListenerForSingleValueEvent(new ValueEventListener() {
