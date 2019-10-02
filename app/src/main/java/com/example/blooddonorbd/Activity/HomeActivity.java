@@ -9,8 +9,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 
 import com.example.blooddonorbd.Classes.ReadMessage;
-import com.example.blooddonorbd.Models.MessageInfo;
-import com.example.blooddonorbd.ProfileActivity;
 import com.example.blooddonorbd.R;
 
 import android.location.Address;
@@ -32,21 +30,13 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.blooddonorbd.Service.LocationService;
-import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.libraries.places.api.Places;
-import com.google.android.libraries.places.api.model.Place;
-import com.google.android.libraries.places.api.net.PlacesClient;
-import com.google.android.libraries.places.widget.Autocomplete;
-import com.google.android.libraries.places.widget.AutocompleteActivity;
-import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -58,7 +48,6 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -124,7 +113,7 @@ public class HomeActivity extends AppCompatActivity implements LocationListener 
         userimage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent=new Intent(HomeActivity.this, ProfileActivity.class);
+                Intent intent=new Intent(HomeActivity.this,ProfileActivity.class);
                 intent.putExtra("city",currentcity );
                 startActivity(intent);
             }

@@ -203,24 +203,7 @@
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
 
-                       <!-- <ImageView
-                            android:onClick="searchIm"
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
-                            android:layout_marginStart="8dp"
-                            android:layout_marginLeft="8dp"
-                            android:layout_marginTop="12dp"
-                            android:layout_marginEnd="8dp"
-                            android:layout_marginRight="8dp"
-                            android:src="@drawable/ic_search_black_24dp"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintHorizontal_bias="1.0"
-                            app:layout_constraintStart_toEndOf="@+id/textView15"
-                            app:layout_constraintTop_toTopOf="parent" />-->
-
-
                     </android.support.constraint.ConstraintLayout>
-
 
                 </LinearLayout>
 
@@ -272,11 +255,15 @@
                         android:id="@+id/bloodgroupSpHome"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="352dp"
                         android:prompt="@string/selectbloodgroup"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="@+id/textView18"
-                        app:layout_constraintStart_toStartOf="@+id/textView18"></Spinner>
+                        app:layout_constraintEnd_toStartOf="@+id/textView18"
+                        app:layout_constraintHorizontal_bias="0.752"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.045">
+
+                    </Spinner>
 
                     <Button
                         android:layout_width="match_parent"
@@ -302,23 +289,7 @@
                         app:layout_constraintVertical_bias="1.0" />
 
                 </android.support.constraint.ConstraintLayout>
-                <!--<LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="5"
-                    >
-                    <Button
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="bottom"
-                        android:layout_marginBottom="5dp"
-                        android:background="@drawable/button_background"
-                        android:gravity="center"
-                        android:onClick="findBt"
-                        android:text="Find"
-                        android:padding="10dp"
-                        android:textColor="#F5F3F3" />
-                </LinearLayout>-->
+
             </LinearLayout>
         </LinearLayout>
 
