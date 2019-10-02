@@ -48,12 +48,12 @@ public class SplashActivity extends AppCompatActivity {
 
     @Override
     protected void onStart() {
-        super.onStart();;
+        super.onStart();
+        linearLayout = findViewById(R.id.splachActivity);
         auth = FirebaseAuth.getInstance();
         final FirebaseUser firebaseUser = auth.getCurrentUser();
 
 //        getSupportActionBar().hide();//hiding actionbar
-        linearLayout = findViewById(R.id.splachActivity);
 
         final AlertDialog.Builder dialog = new AlertDialog.Builder(SplashActivity.this);
         dialog.setTitle("Network error!");
