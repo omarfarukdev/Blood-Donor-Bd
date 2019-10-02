@@ -1,26 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".FAQSActivity">
+    android:orientation="vertical"
+    tools:context=".Activity.FAQSActivity">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="0dp"
-        android:layout_marginLeft="0dp"
-        android:layout_marginTop="0dp"
-        android:layout_marginBottom="0dp"
-        android:minHeight="?attr/actionBarSize"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0">
+        android:minHeight="?attr/actionBarSize">
 
     </android.support.v7.widget.Toolbar>
 
@@ -28,11 +19,129 @@
         android:id="@+id/view"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_marginTop="8dp"
         android:background="#E96262"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar"
-        app:layout_constraintVertical_bias="0.0"
-        tools:layout_editor_absoluteX="8dp" />
+        tools:layout_editor_absoluteX="10dp" />
 
-</android.support.constraint.ConstraintLayout>
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="5dp"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_marginTop="10dp"
+                android:textSize="25sp"
+                android:layout_height="wrap_content"
+                android:text="Blood Structure"
+                android:textColor="#4F6DA8">
+
+            </TextView>
+            <TextView
+                android:id="@+id/inputs"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Hello World!"
+                android:textSize="18sp"
+                android:textColor="#000"
+                />
+            <TextView
+                android:id="@+id/input"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="dhdsj"
+                android:textSize="18sp"
+                android:textColor="#000">
+
+            </TextView>
+            <TextView
+                android:id="@+id/inputh"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="25dp"
+                android:layout_marginTop="10dp"
+                android:text="dklfjvfv"
+                android:textSize="18sp"
+                android:textColor="#000">
+            </TextView>
+            <TextView
+                android:id="@+id/input1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:textColor="#000">
+
+            </TextView>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_marginTop="30dp"
+                android:textSize="25sp"
+                android:layout_height="wrap_content"
+                android:text="Blood Functions"
+                android:textColor="#4F6DA8"/>
+            <TextView
+                android:id="@+id/input2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#000"
+                android:textSize="18sp"
+                >
+
+            </TextView>
+            <TextView
+                android:id="@+id/inputh3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="25dp"
+                android:text="dklfjvfv"
+                android:textSize="18sp"
+                android:textColor="#000">
+            </TextView>
+            <TextView
+                android:id="@+id/input3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:textColor="#000">
+
+            </TextView>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="All About Blood Group"
+                android:textSize="25sp"
+                android:textColor="#4F6DA8">
+            </TextView>
+            <TextView
+                android:id="@+id/input4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:textColor="#000">
+
+            </TextView>
+            <TextView
+                android:id="@+id/input5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="25sp"
+                android:textSize="18sp"
+                android:textColor="#000">
+
+            </TextView>
+            <TextView
+                android:id="@+id/input6"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:textColor="#000">
+
+            </TextView>
+        </LinearLayout>
+
+    </ScrollView>
+
+</LinearLayout>
