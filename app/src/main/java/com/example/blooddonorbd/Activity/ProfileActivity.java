@@ -1,40 +1,42 @@
-package com.example.blooddonorbd;
+package com.example.blooddonorbd.Activity;
 
+import android.Manifest;
 import android.app.AlertDialog;
-import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.LocationManager;
+import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
-import android.util.Log;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.CompoundButton;
+import android.widget.Switch;
 import android.widget.TextView;
 
-import com.example.blooddonorbd.Activity.EditProfileActivity;
-import com.example.blooddonorbd.Activity.HelpActivity;
-import com.example.blooddonorbd.Activity.MessagesActivity;
-import com.example.blooddonorbd.Activity.SettingActivity;
-import com.example.blooddonorbd.Activity.SplashActivity;
+import com.example.blooddonorbd.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 
-import java.sql.Date;
-import java.sql.Time;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 public class ProfileActivity extends AppCompatActivity {
-    TextView username,usernumber;
-    CardView message,setting,logout,help;
+    Toolbar toolbar;
+    TextView username,usernumber,bloodgroup;
+    CardView message,setting,logout,help,faqs;
     String currentnumber,name,city;
+    Switch prolocation;
     DatabaseReference databaseReference;
 
     @Override
@@ -42,13 +44,39 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
-       // getSupportActionBar().hide();
+        bloodgroup=findViewById(R.id.bloodgroup);
+        prolocation=findViewById(R.id.locaswitch);
         username=findViewById(R.id.username);
         usernumber=findViewById(R.id.usernumber);
         message=findViewById(R.id.message);
         setting=findViewById(R.id.setting);
+        faqs=findViewById(R.id.faqs);
         logout=findViewById(R.id.logout);
+        toolbar=findViewById(R.id.toolbar);
+        toolbar.setTitle("Profile");
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+       toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View view) {
+               finish();
+           }
+       });
 
+        if (isLocationEnabled()){
+            prolocation.setChecked(true);
+            prolocation.setClickable(false);
+        }
+        prolocation.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked){
+                    runTimePermission();
+                    startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                }
+            }
+        });
         help=findViewById(R.id.help);
         city = getIntent().getStringExtra("city");
         currentnumber=FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber();
@@ -68,6 +96,10 @@ public class ProfileActivity extends AppCompatActivity {
                         if (d.getKey().equals("Full Name")){
                             name=d.getValue().toString();
                             username.setText(name);
+
+                        }
+                        if(d.getKey().equals("Blood Group")){
+                            bloodgroup.setText("("+d.getValue().toString()+") blood");
                         }
                     }
 
@@ -136,6 +168,13 @@ public class ProfileActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+        faqs.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent=new Intent(ProfileActivity.this,FAQSActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     public void edit(View view) {
@@ -146,4 +185,20 @@ public class ProfileActivity extends AppCompatActivity {
     public void closeBt(View view) {
         finish();
     }
+    private boolean runTimePermission() {
+        if (Build.VERSION.SDK_INT>23 && ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ContextCompat.checkSelfPermission(this,Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+
+            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACCESS_COARSE_LOCATION},100);
+            return true;
+        }
+        return false;
+    }
+    private boolean isLocationEnabled() {
+        LocationManager mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        return mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
+                mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+    }
+
+
 }

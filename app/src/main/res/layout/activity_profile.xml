@@ -128,7 +128,7 @@
                 android:layout_height="match_parent">
 
                 <TextView
-                    android:id="@+id/textView14"
+                    android:id="@+id/text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
@@ -147,7 +147,7 @@
                     app:layout_constraintVertical_bias="0.0" />
 
                 <Switch
-                    android:id="@+id/lswitch"
+                    android:id="@+id/locaswitch"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
@@ -158,7 +158,7 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.971"
-                    app:layout_constraintStart_toEndOf="@+id/textView14"
+                    app:layout_constraintStart_toEndOf="@+id/text"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintVertical_bias="0.0" />
 
@@ -173,12 +173,12 @@
                     android:layout_marginRight="8dp"
                     android:layout_marginBottom="8dp"
                     android:padding="5dp"
-                    android:text="(A+) blood"
+                    android:text="(C+) blood"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/lswitch"
+                    app:layout_constraintEnd_toStartOf="@+id/locaswitch"
                     app:layout_constraintHorizontal_bias="0.03"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/textView14"
+                    app:layout_constraintTop_toBottomOf="@+id/text"
                     app:layout_constraintVertical_bias="0.8" />
             </android.support.constraint.ConstraintLayout>
         </android.support.v7.widget.CardView>
