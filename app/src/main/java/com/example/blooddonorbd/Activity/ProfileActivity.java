@@ -44,8 +44,8 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
-        bloodgroup=findViewById(R.id.bloodgroup);
-        prolocation=findViewById(R.id.locaswitch);
+        /*bloodgroup=findViewById(R.id.bloodgroup);
+        prolocation=findViewById(R.id.locaswitch);*/
         username=findViewById(R.id.username);
         usernumber=findViewById(R.id.usernumber);
         message=findViewById(R.id.message);
@@ -64,7 +64,7 @@ public class ProfileActivity extends AppCompatActivity {
            }
        });
 
-        if (isLocationEnabled()){
+        /*if (isLocationEnabled()){
             prolocation.setChecked(true);
             prolocation.setClickable(false);
         }
@@ -76,7 +76,7 @@ public class ProfileActivity extends AppCompatActivity {
                     startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
                 }
             }
-        });
+        });*/
         help=findViewById(R.id.help);
         city = getIntent().getStringExtra("city");
         currentnumber=FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber();
@@ -98,9 +98,9 @@ public class ProfileActivity extends AppCompatActivity {
                             username.setText(name);
 
                         }
-                        if(d.getKey().equals("Blood Group")){
+                        /*if(d.getKey().equals("Blood Group")){
                             bloodgroup.setText("("+d.getValue().toString()+") blood");
-                        }
+                        }*/
                     }
 
                 }
@@ -182,10 +182,7 @@ public class ProfileActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public void closeBt(View view) {
-        finish();
-    }
-    private boolean runTimePermission() {
+    /*private boolean runTimePermission() {
         if (Build.VERSION.SDK_INT>23 && ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ContextCompat.checkSelfPermission(this,Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED){
 
@@ -199,6 +196,6 @@ public class ProfileActivity extends AppCompatActivity {
         return mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
                 mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
     }
-
+*/
 
 }
